@@ -11,14 +11,14 @@
 9. TypeDecl ➡️ DataType TypeDecl2
 10. TypeDecl2 ➡️ :: IdentifierList | , parameter :: NamedConstant
 11. DataType ➡️ integer | real | complex | logical | CharacterDType
-12. NamedConstant ➡️ identifier = constant
+12. NamedConstant ➡️ identifier = LogicalOrConst
 13. CharacterDType ➡️ character CharacterDType2
 14. CharacterDType2 ➡️ ( len = IdorConst) | ɜ
 15. Statements ➡️ Statement Statements2 
 16. Statements2 ➡️ Statement Statements2 | ɜ
 17. Statement ➡️ Assignment | Print | Read | IF | DoLoop | ɜ 
 18. Assignment ➡️ identifier = Relations
-19. Relations ➡️ IdorConst Relation
+19. Relations ➡️ IdorConst Relation | LogicalVal
 20. Relation ➡️ ArithmeticOp IdorConst Relation2 | ɜ
 21. Relation2 ➡️ ArithmeticOp IdorConst Relation2 | ɜ
 22. Print ➡️ print *  PrintCall
@@ -36,6 +36,9 @@
 34. ArithmeticOp ➡️ * | / | + | -
 35. IdentifierList ➡️ identifier IdentifierList2 
 36. IdentifierList2 ➡️ , identifier IdentifierList2 | ɜ
-37. Conditional ➡️ IdorConst RelationalOp IdorConst | identifier 🍎 
+37. Conditional ➡️ IdorConst RelationalOp IdorConst | identifier | LogicalVal🍎 
 38. IdorConst ➡️ identifier | constant
-39. RelationalOp ➡️ > | < | <= | >= | == | /=
+39. RelationalOp ➡️ > | < | <= | >= | == | /= 
+40. LogicalOrIdentifier ➡️ LogicalVal | IdentifierList
+41. LogicalOrConst ➡️ LogicalVal | constant
+42. LogicalVal ➡️ true | false
