@@ -88,7 +88,7 @@ Operators = {
     ",": Token_type.Comma,
     "(":Token_type.openParenthesis,
     ")":Token_type.closeParenthesis,
-    "\n":Token_type.delimiter
+    "\\n":Token_type.delimiter
 }
 
 
