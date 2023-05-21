@@ -134,7 +134,7 @@ def find_token(text):
             else:
                 new_token = token(le, Token_type.Error)
                 Errors.append("Lexical error  " + le)
-        new_token=token("\n",Token_type.delimiter)
+        new_token=token("\\n",Token_type.delimiter)
         Tokens.append(new_token)
 
 
