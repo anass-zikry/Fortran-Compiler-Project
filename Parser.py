@@ -4,15 +4,26 @@ import tkinter as tk
 import pandas
 import pandastable as pt
 
-
-
+Token_type=[]
+Tokens=[] 
+Errors=[]
 #Integer Regex : /^integer\s*::\s*([a-zA-Z][a-zA-Z0-9]*)\s*(,\s*([a-zA-Z][a-zA-Z0-9]*))*\s*$/gm
 # /^(integer|real|complex|logical)\s*::\s*([a-zA-Z][a-zA-Z0-9]*)\s*(,\s*([a-zA-Z][a-zA-Z0-9]*))*\s*$/gm
 #💀💀💀💀💀💀💀💀💀💀💀
-ScannerData=get_Dicts()
-Token_type=getToken_type()
-Tokens=ScannerData[0]
-Errors=ScannerData[1]
+
+comment_indeces=[]
+comment_token=0
+def skip_comments():
+    for i in range(len(Tokens)):
+        if Tokens[i].to_dict()['token_type'] == Token_type.ExclMark :
+            comment_indeces.append(i)
+    for commentIndex in comment_indeces:
+        global comment_token
+        comment_token=Tokens.pop(commentIndex)
+
+def add_comments():
+    for commentIndex in comment_indeces:
+        Tokens.insert(commentIndex,comment_token)
 def Match(TT,i) :
     out = dict()
     if(i<len(Tokens)) :
@@ -61,7 +72,6 @@ def ProgramStart2(i):
     ProgramStart2_Dict = dict()
     ProgramStart2_Children = []
     if i < len(Tokens):
-        print(i)
         Temp = Tokens[i].to_dict()
         if Temp['token_type'] == Token_type.program:
             Dict1 = ProgramUnit(i)
@@ -1160,8 +1170,15 @@ def Scan():
     filePath = entry1.get()
     with open(filePath) as f:
         lines=f.readlines()
-    print(lines)
     find_token(lines)
+    global Token_type ,Tokens ,Errors
+    ScannerData=get_Dicts()
+    Token_type=getToken_type()
+    Tokens=ScannerData[0]
+    Errors=ScannerData[1]
+    skip_comments()
+    Node=ProgramStart()
+    add_comments()
     df=pandas.DataFrame.from_records([t.to_dict() for t in Tokens])
     #print(df)
     
@@ -1172,9 +1189,7 @@ def Scan():
     dTDaPT.show()
     # start Parsing
     # Node=Parse()
-    Node=ProgramStart()
      
-    
     # to display errorlist
     df1=pandas.DataFrame(Errors)
     dTDa2 = tk.Toplevel()

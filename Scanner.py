@@ -112,10 +112,10 @@ def find_token(text):
     for line in text :
         lexems = line.split()
         for le in lexems:
-            if (le == '!'):
+            if (le == "!"):
                 new_token = token(le, Operators[le])
                 Tokens.append(new_token)
-                # break  #💀
+                break  #💀
             elif (le in ReservedWords):
                 new_token = token(le, ReservedWords[le])
                 Tokens.append(new_token)
@@ -139,7 +139,7 @@ def find_token(text):
 
 
 def get_Dicts() :
-    return (Tokens,Errors)
+    return [Tokens,Errors]
 
 def getToken_type() :
     return Token_type
