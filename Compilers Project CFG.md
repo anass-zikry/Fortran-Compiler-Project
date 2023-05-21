@@ -29,7 +29,7 @@
 27. Read ➡️ read * , IdentifierList delimiter
 28. IF ➡️ IFStart IF2
 29. IF2 ➡️ end if delimiter | else delimiter Statements end if delimiter
-30. IFStart ➡️ if Conditional then delimiter Statements
+30. IFStart ➡️ if ( Conditional ) then delimiter Statements
 31. DoLoop ➡️ DoStart Statements end do delimiter
 32. DoStart ➡️ do identifier = constant , IdorConst  Step delimiter
 33. Step ➡️ , IdorConst  | ɛ
