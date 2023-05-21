@@ -4,6 +4,10 @@ import tkinter as tk
 import pandas
 import pandastable as pt
 
+
+
+#Integer Regex : /^integer\s*::\s*([a-zA-Z][a-zA-Z0-9]*)\s*(,\s*([a-zA-Z][a-zA-Z0-9]*))*\s*$/gm
+# /^(integer|real|complex|logical)\s*::\s*([a-zA-Z][a-zA-Z0-9]*)\s*(,\s*([a-zA-Z][a-zA-Z0-9]*))*\s*$/gm
 #💀💀💀💀💀💀💀💀💀💀💀
 ScannerData=get_Dicts()
 Token_type=getToken_type()
@@ -103,9 +107,11 @@ def Header(i):
     Header_children.append(match1['node'])
     match2 = Match(Token_type.identifier, match1['index'])
     Header_children.append(match2['node'])
+    match3 = Match(Token_type.delimiter, match2['index'])
+    Header_children.append(match3['node'])
     Header_node = Tree("Header", Header_children)
     Header_dict['node'] = Header_node
-    Header_dict['index'] = match2['index']
+    Header_dict['index'] = match3['index']
     return Header_dict
 
 
@@ -116,13 +122,15 @@ def Block(i):
     Block_children.append(match1['node'])
     match2 = Match(Token_type.none, match1['index'])
     Block_children.append(match2['node'])
-    dict3 = TypeDecls(match2['index'])
-    Block_children.append(dict3['node'])
-    dict4 = Statements(dict3['index'])
+    match3 = Match(Token_type.delimiter, match2['index'])
+    Block_children.append(match3['node'])
+    dict4 = TypeDecls(match3['index'])
     Block_children.append(dict4['node'])
+    dict5 = Statements(dict4['index'])
+    Block_children.append(dict5['node'])
     Block_node = Tree("Block", Block_children)
     Block_dict['node'] = Block_node
-    Block_dict['index'] = dict4['index']
+    Block_dict['index'] = dict5['index']
     return Block_dict
 
 
@@ -135,9 +143,11 @@ def Footer(i):
     Footer_children.append(match2['node'])
     match3 = Match(Token_type.identifier, match2['index'])
     Footer_children.append(match3['node'])
+    match4 = Match(Token_type.delimiter, match3['index'])
+    Footer_children.append(match4['node'])
     Footer_node = Tree("Footer", Footer_children)
     Footer_dict['node'] = Footer_node
-    Footer_dict['index'] = match3['index']
+    Footer_dict['index'] = match4['index']
     return Footer_dict
 
 
@@ -225,7 +235,9 @@ def TypeDecl2(i):
             TypeDecl2_children.append(match1['node'])
             dict2 = IdentifierList(match1['index'])
             TypeDecl2_children.append(dict2['node'])
-            last_index = dict2['index']
+            match3 = Match(Token_type.delimiter, dict2['index'])
+            TypeDecl2_children.append(match3['node'])
+            last_index = match3['index']
         elif temp['token_type'] == Token_type.Comma:
             match1 = Match(Token_type.Comma, i)
             TypeDecl2_children.append(match1['node'])
@@ -235,11 +247,17 @@ def TypeDecl2(i):
             TypeDecl2_children.append(match3['node'])
             dict4 = NamedConstant(match3['index'])
             TypeDecl2_children.append(dict4['node'])
-            last_index = dict4['index']
+            match5 = Match(Token_type.delimiter, dict4['index'])
+            TypeDecl2_children.append(match5['node'])
+            last_index = match5['index']
         else:
             match1 = Match(Token_type.Error, i)
             TypeDecl2_children.append(match1['node'])
             last_index = match1['index']
+    else:
+        match1 = Match(Token_type.Error, i)
+        TypeDecl2_children.append(match1['node'])
+        last_index = match1['index']
     TypeDecl2_node = Tree("TypeDecl2", TypeDecl2_children)
     TypeDecl2_dict['node'] = TypeDecl2_node
     TypeDecl2_dict['index'] = last_index
@@ -443,9 +461,11 @@ def Assignment(i):
     Assignment_children.append(match2['node'])
     dict3 = Relations(match2['index'])
     Assignment_children.append(dict3['node'])
+    match4 = Match(Token_type.delimiter, dict3['index'])
+    Assignment_children.append(match4['node'])
     Assignment_node = Tree("Assignment", Assignment_children)
     Assignment_dict['node'] = Assignment_node
-    Assignment_dict['index'] = dict3['index']
+    Assignment_dict['index'] = match4['index']
     return Assignment_dict
 
 
@@ -556,11 +576,13 @@ def Print(i):
     Print_children.append(match2['node'])
     dict3 = PrintCall(match2['index'])
     Print_children.append(dict3['node'])
+    match4 = Match(Token_type.delimiter, dict3['index'])
+    Print_children.append(match4['node'])
     if None in Print_children:
         Print_children.remove(None)
     Print_node = Tree("Print", Print_children)
     Print_dict['node'] = Print_node
-    Print_dict['index'] = dict3['index']
+    Print_dict['index'] = match4['index']
     return Print_dict
 
 
@@ -683,9 +705,11 @@ def Read(i):
     Read_children.append(match3['node'])
     dict4 = IdentifierList(match3['index'])
     Read_children.append(dict4['node'])
+    match5 = Match(Token_type.delimiter, dict4['index'])
+    Read_children.append(match5['node'])
     Read_node = Tree("Read", Read_children)
     Read_dict['node'] = Read_node
-    Read_dict['index'] = dict4['index']
+    Read_dict['index'] = match5['index']
     return Read_dict
 
 
@@ -714,17 +738,23 @@ def If2(i):
             If2_children.append(match1['node'])
             match2 = Match(Token_type.If, match1['index'])
             If2_children.append(match2['node'])
-            last_index = match2['index']
+            match3 = Match(Token_type.delimiter, match2['index'])
+            If2_children.append(match3['node'])
+            last_index = match3['index']
         elif temp['token_type'] == Token_type.Else:
             match1 = Match(Token_type.Else, i)
             If2_children.append(match1['node'])
-            dict2 = Statements(match1['index'])
-            If2_children.append(dict2['node'])
-            match3 = Match(Token_type.end, i)
-            If2_children.append(match3['node'])
-            match4 = Match(Token_type.If, match3['index'])
+            match2 = Match(Token_type.delimiter, match1['index'])
+            If2_children.append(match2['node'])
+            dict3 = Statements(match2['index'])
+            If2_children.append(dict3['node'])
+            match4 = Match(Token_type.end, dict3['index'])
             If2_children.append(match4['node'])
-            last_index = match4['index']
+            match5 = Match(Token_type.If, match4['index'])
+            If2_children.append(match5['node'])
+            match6 = Match(Token_type.delimiter, match5['index'])
+            If2_children.append(match6['node'])
+            last_index = match6['index']
         else:
             match1 = Match(Token_type.Error, i)
             If2_children.append(match1['node'])
@@ -752,11 +782,13 @@ def IfStart(i):
     IfStart_children.append(match4['node'])
     match5 = Match(Token_type.then, match4['index'])
     IfStart_children.append(match5['node'])
-    dict6 = Statements(match5['index'])
-    IfStart_children.append(dict6['node'])
+    match6 = Match(Token_type.delimiter, match5['index'])
+    IfStart_children.append(match6['node'])
+    dict7 = Statements(match6['index'])
+    IfStart_children.append(dict7['node'])
     IfStart_node = Tree("IfStart", IfStart_children)
     IfStart_dict['node'] = IfStart_node
-    IfStart_dict['index'] = dict6['index']
+    IfStart_dict['index'] = dict7['index']
     return IfStart_dict
 
 
@@ -771,9 +803,11 @@ def DoLoop(i):
     DoLoop_children.append(match3['node'])
     match4 = Match(Token_type.do, match3['index'])
     DoLoop_children.append(match4['node'])
+    match5 = Match(Token_type.delimiter, match4['index'])
+    DoLoop_children.append(match5['node'])
     DoLoop_node = Tree("DoLoop", DoLoop_children)
     DoLoop_dict['node'] = DoLoop_node
-    DoLoop_dict['index'] = match4['index']
+    DoLoop_dict['index'] = match5['index']
     return DoLoop_dict
 
 
@@ -794,11 +828,13 @@ def DoStart(i):
     DoStart_children.append(dict6['node'])
     dict7 = Step(dict6['index'])
     DoStart_children.append(dict7['node'])
+    match8 = Match(Token_type.delimiter, dict7['index'])
+    DoStart_children.append(match8['node'])
     if None in DoStart_children:
         DoStart_children.remove(None)
     DoStart_node = Tree("DoStart", DoStart_children)
     DoStart_dict['node'] = DoStart_node
-    DoStart_dict['index'] = dict7['index']
+    DoStart_dict['index'] = match8['index']
     return DoStart_dict
 
 
