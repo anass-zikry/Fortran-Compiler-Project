@@ -108,6 +108,7 @@ class token:
 
 Tokens = []
 Errors = []
+# To avoid failure for absence of spaces between tokens
 Regex_dict = {
     "^\s*(program)\s+([a-z]\w*)\s*$": "header",
     "^\s*(implicit)\s+(none)\s*$": "implicit none",
@@ -121,6 +122,7 @@ Regex_dict = {
     "^\s*(print)\s*(\*)(\s*(,)\s*([a-z]\w*|[0-9]+|((\")(\w*|\$|%|#|@|!|\"|'|\s)*(\"))))*\s*$": "print2",
     "^\s*([a-z]\w*)\s*(=)\s*(((([a-z]\w*)|[0-9]+)(\s*(\*|/|-|\+)\s*(([a-z]\w*)|[0-9]+))*)|(\.true\.|\.false\.))\s*$": "assignment",
     "^\s*(if)\s*(\()\s*((([a-z]\w*)|[0-9]+)\s*(<|>|<=|>=|==|/=)\s*(([a-z]\w*)|[0-9]+)|([a-z]\w*)|(\.true|false\.|))\s*(\))\s*(then)\s*$": "if",
+    "^\s*(do)\s+([a-z]\w*)\s*(=)\s*((-|\+)?[0-9]+)\s*(,)\s*([a-z]\w*|(-|\+)?[0-9]+)\s*((,)\s*([a-z]\w*|(-|\+)?[0-9]+))?\s*$":"do",
 
 }
 
@@ -149,9 +151,8 @@ def find_token(text):
         #     lexems=re.match("^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$",line).groups()
         # elif re.match("^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$",line) :
         #     lexems=re.match("^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$",line).groups()
-        print(lexems)
+        # print(lexems)
         lexems=list(i for i in lexems if i is not None)
-        print(lexems)
         if len(lexems) == 0:
             lexems = line.split()
         for le in lexems:
