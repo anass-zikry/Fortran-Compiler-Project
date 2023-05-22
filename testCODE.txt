@@ -1,0 +1,4 @@
+program kk
+integer::x
+read*,x
+end program kk
