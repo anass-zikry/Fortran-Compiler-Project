@@ -1,9 +1,13 @@
-from Scanner import find_token,get_Dicts,getToken_type
-from nltk.tree import *
 import tkinter as tk
 import pandas
 import pandastable as pt
+from tkPDFViewer import tkPDFViewer as pdf
+from PIL import Image, ImageTk, ImageOps
+from Scanner import find_token,get_Dicts,getToken_type,Operators
+from nltk.tree import *
+from dfa_test import get_reserver_dict
 
+reserve_DFAs,DFA_order_dict=get_reserver_dict()
 Token_type=[]
 Tokens=[] 
 Errors=[]
@@ -1180,15 +1184,60 @@ def Scan():
     Node=ProgramStart()
     add_comments()
     df=pandas.DataFrame.from_records([t.to_dict() for t in Tokens])
+    # def update_buttons():
+    #     for i, row in df.iterrows():
+    #         button = tk.Button(root, text='DFA', command=lambda key= i: DFA_click(key))
+    #         df.at[i, 'Button'] = button
+    
+    # update_buttons()
     #print(df)
+    # def loop_dfa(tok,dfa_index):
+    #     for i in range(len(tok["Lex"])):
+    #         reserve_DFAs[dfa_index].show_diagram(input_str=tok['Lex'][:i],font_size=9, arrow_size=0.2,format_type='jpg',path="Diagrams/",filename=tok["Lex"])
+    def DFA_click(Token_index):
+        temp=Tokens[Token_index].to_dict()
+        if temp['token_type'] == Token_type.identifier :
+            pass
+        elif temp['token_type'] == Token_type.string :
+            pass
+        elif temp['Lex'] in Operators:
+            pass
+        else:
+            pass
+        dfa_index=DFA_order_dict[temp['Lex']]
+        reserve_DFAs[dfa_index].show_diagram(input_str=temp['Lex'],font_size=9, arrow_size=0.2,format_type='jpg',path="Diagrams/",filename=temp["Lex"])
+        # loop_dfa(temp,dfa_index)
+        dfa_di=tk.Toplevel()
+        dfa_di.title(temp["Lex"])
+        img_label=tk.Label(dfa_di)
+        path="Diagrams/"+temp['Lex']+".jpg"
+        img = Image.open(fp=path, mode='r')
+        photo = ImageTk.PhotoImage(image=img)
+        img_label.config(image=photo)
+        img_label.image = photo
+        img_label.pack()
+        # v1 = pdf.ShowPdf()
+        # v2 = v1.pdf_view(dfa_di,pdf_location = r"Diagrams/"+temp['Lex']+".pdf", width = 800, height = 600)
+        # v2.pack()
+
+        # print("button clicked"+str(Token_index))
     
     #to display token stream as table
     dTDa1 = tk.Toplevel()
     dTDa1.title('Token Stream')
     dTDaPT = pt.Table(dTDa1, dataframe=df, showtoolbar=True, showstatusbar=True)
+    # dTDaPT.addColumn(newname="DFA")
     dTDaPT.show()
     # start Parsing
     # Node=Parse()
+    DFA_wind=tk.Toplevel()
+    DFA_wind.title('DFA Diagrams')
+    DFA_canvas=tk.Canvas(DFA_wind)
+    for i in range(len(Tokens)):
+        dfa_button=tk.Button(DFA_canvas, text='DFA'+str(i+1), command=lambda key= i: DFA_click(key),padx=100)
+        dfa_button.pack()
+    DFA_canvas.pack()
+        
      
     # to display errorlist
     df1=pandas.DataFrame(Errors)

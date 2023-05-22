@@ -136,11 +136,11 @@ def find_token(text):
             comment_flag = True
         line = line.lower()  # convert to lower case
         for regex in Regex_dict:
-            print(regex)
+            # print(regex)
             m = re.match(regex, line)
             if m:
                 lexems = m.groups()
-                print(lexems)
+                # print(lexems)
 
                 break
         # if re.match("^\s*(program)\s+([a-z]\w*)\s*$",line) :
