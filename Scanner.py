@@ -40,10 +40,11 @@ class Token_type(Enum):  # listing all tokens type
     Error = 35
     Comma = 36
     Len = 37
-    openParenthesis=38
-    closeParenthesis=39
-    false=40
-    delimiter=41
+    openParenthesis = 38
+    closeParenthesis = 39
+    false = 40
+    delimiter = 41
+
 
 # Reserved word Dictionary
 ReservedWords = {
@@ -64,8 +65,8 @@ ReservedWords = {
     "read": Token_type.read,
     "print": Token_type.Print,
     "len": Token_type.Len,
-    ".true.":Token_type.true,
-    ".false.":Token_type.false
+    ".true.": Token_type.true,
+    ".false.": Token_type.false
 }
 
 
@@ -86,9 +87,9 @@ Operators = {
     "/=": Token_type.NotEqualOp,
     "==": Token_type.EqualEqualOp,
     ",": Token_type.Comma,
-    "(":Token_type.openParenthesis,
-    ")":Token_type.closeParenthesis,
-    "\\n":Token_type.delimiter
+    "(": Token_type.openParenthesis,
+    ")": Token_type.closeParenthesis,
+    "\\n": Token_type.delimiter
 }
 
 
@@ -105,18 +106,60 @@ class token:
         }
 
 
-Tokens=[]
-Errors=[]
+Tokens = []
+Errors = []
+Regex_dict = {
+    "^\s*(program)\s+([a-z]\w*)\s*$": "header",
+    "^\s*(implicit)\s+(none)\s*$": "implicit none",
+    "^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$": "type decl no char",
+    "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$": "char type decl",
+    "^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))\s*(::)\s*([a-z]\w*)\s*(=)\s*((-|\+)?[0-9]+|(-|\+)?[0-9]+.?[0-9]*|((\()\s*(-|\+)?[0-9]+.[0-9]+\s*(,)\s*(-|\+)?[0-9]+.[0-9]+\s*(\)))|(.true.|.false.))\s*$": "constant type decl no char",
+    "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*((,)\s*(parameter))\s*(::)\s*([a-z]w*)\s*(=)\s*((')(\w*|\$|%|#|@|!|\"|'|\s)*('))\s*$": "char constant type decl1",
+    "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*((,)\s*(parameter))\s*(::)\s*([a-z]w*)\s*(=)\s*((\")(\w*|\$|%|#|@|!|\"|'|\s)*(\"))\s*$": "char constant type decl2",
+    "^\s*(read)\s*(\*)\s*(,)\s*([a-z]\w*)(\s*(,)\s*([a-z]\w*))*\s*$": "read",
+    "^\s*(print)\s*(\*)(\s*(,)\s*([a-z]\w*|[0-9]+|((')(\w*|\$|%|#|@|!|\"|'|\s)*('))))*\s*$": "print1",
+    "^\s*(print)\s*(\*)(\s*(,)\s*([a-z]\w*|[0-9]+|((\")(\w*|\$|%|#|@|!|\"|'|\s)*(\"))))*\s*$": "print2",
+    "^\s*([a-z]\w*)\s*(=)\s*(((([a-z]\w*)|[0-9]+)(\s*(\*|/|-|\+)\s*(([a-z]\w*)|[0-9]+))*)|(\.true\.|\.false\.))\s*$": "assignment",
+    "^\s*(if)\s*(\()\s*((([a-z]\w*)|[0-9]+)\s*(<|>|<=|>=|==|/=)\s*(([a-z]\w*)|[0-9]+)|([a-z]\w*)|(\.true|false\.|))\s*(\))\s*(then)\s*$": "if",
+
+}
+
 
 def find_token(text):
-    for line in text :
-        lexems = line.split()
+    for line in text:
+        comment_flag = False
+        lexems = ()
+        if "!" in line:
+            line = line.split('!')[0]
+            comment_flag = True
+        line = line.lower()  # convert to lower case
+        for regex in Regex_dict:
+            print(regex)
+            m = re.match(regex, line)
+            if m:
+                lexems = m.groups()
+                print(lexems)
+
+                break
+        # if re.match("^\s*(program)\s+([a-z]\w*)\s*$",line) :
+        #     lexems=re.match("^\s*(program)\s+([a-z]\w*)\s*$",line).groups()
+        # elif re.match("^\s*(implicit)\s+(none)\s*$",line) :
+        #     lexems=re.match("^\s*(implicit)\s+(none)\s*$",line).groups()
+        # elif re.match("^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$",line) :
+        #     lexems=re.match("^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$",line).groups()
+        # elif re.match("^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$",line) :
+        #     lexems=re.match("^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$",line).groups()
+        print(lexems)
+        lexems=list(i for i in lexems if i is not None)
+        print(lexems)
+        if len(lexems) == 0:
+            lexems = line.split()
         for le in lexems:
-            if (le == "!"):
-                new_token = token(le, Operators[le])
-                Tokens.append(new_token)
-                break  #💀
-            elif (le in ReservedWords):
+            # if (le == "!"):
+            #     new_token = token(le, Operators[le])
+            #     Tokens.append(new_token)
+            #     break  #💀
+            if (le in ReservedWords):
                 new_token = token(le, ReservedWords[le])
                 Tokens.append(new_token)
             elif (le in Operators):
@@ -134,14 +177,18 @@ def find_token(text):
             else:
                 new_token = token(le, Token_type.Error)
                 Errors.append("Lexical error  " + le)
-        new_token=token("\\n",Token_type.delimiter)
+        if comment_flag:
+            new_token = token("!", Operators["!"])
+            Tokens.append(new_token)
+        new_token = token("\\n", Token_type.delimiter)
         Tokens.append(new_token)
 
 
-def get_Dicts() :
-    return [Tokens,Errors]
+def get_Dicts():
+    return [Tokens, Errors]
 
-def getToken_type() :
+
+def getToken_type():
     return Token_type
 # #GUI
 # root= tk.Tk()
@@ -164,7 +211,7 @@ def getToken_type() :
 #     find_token(lines)
 #     df=pandas.DataFrame.from_records([t.to_dict() for t in Tokens])
 #     #print(df)
-    
+
 #     #to display token stream as table
 #     dTDa1 = tk.Toplevel()
 #     dTDa1.title('Token Stream')
@@ -173,8 +220,8 @@ def getToken_type() :
 #     # start Parsing
 #     # Node=Parse()
 #     Node=ProgramStart()
-     
-    
+
+
 #     # to display errorlist
 #     df1=pandas.DataFrame(Errors)
 #     dTDa2 = tk.Toplevel()
@@ -201,14 +248,14 @@ def getToken_type() :
 #     #         # print("x="+str(x))
 #     Node.draw()
 #     #clear your list
-    
+
 #     #label3 = tk.Label(root, text='Lexem ' + x1 + ' is:', font=('helvetica', 10))
 #     #canvas1.create_window(200, 210, window=label3)
-    
+
 #     #label4 = tk.Label(root, text="Token_type"+x1, font=('helvetica', 10, 'bold'))
 #     #canvas1.create_window(200, 230, window=label4)
-    
-    
+
+
 # button1 = tk.Button(text='Scan', command=Scan, bg='brown', fg='white', font=('helvetica', 9, 'bold'))
 # canvas1.create_window(200, 180, window=button1)
 # root.mainloop()
