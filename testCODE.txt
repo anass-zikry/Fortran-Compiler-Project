@@ -1,4 +1,5 @@
 program kk
+implicit none
 integer::x
 read*,x
 end program kk
