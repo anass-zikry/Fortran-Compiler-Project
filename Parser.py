@@ -5,9 +5,13 @@ from tkPDFViewer import tkPDFViewer as pdf
 from PIL import Image, ImageTk, ImageOps
 from Scanner import find_token,get_Dicts,getToken_type,Operators
 from nltk.tree import *
-from dfa_test import get_reserver_dict
+from dfa_test import get_reserver_dict ,get_identfier_dfa,get_operator_dfa,get_string_dfa
+import re 
 
 reserve_DFAs,DFA_order_dict=get_reserver_dict()
+identfier_dfa=get_identfier_dfa()
+string_dfa=get_string_dfa()
+operators_dfa=get_operator_dfa()
 Token_type=[]
 Tokens=[] 
 Errors=[]
@@ -1197,9 +1201,32 @@ def Scan():
     def DFA_click(Token_index):
         temp=Tokens[Token_index].to_dict()
         if temp['token_type'] == Token_type.identifier :
-            pass
+            idntString=""
+            for i in temp["Lex"]:
+                if(re.match("[0-9]",i)):
+                    idntString=idntString+"D"
+                elif (re.match("[a-z]",i)):
+                    idntString=idntString+"L"
+                elif(i=="_"):
+                    idntString=idntString+"_"
+                    
+            identfier_dfa.show_diagram(input_str=idntString,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp["Lex"],view=True)
         elif temp['token_type'] == Token_type.string :
-            pass
+        
+            tok_string_string=""
+            for i in temp["Lex"]:
+                if(re.match("'|\"",i)):
+                    tok_string_string=tok_string_string+i
+                elif (re.match("[a-z]",i)):
+                    tok_string_string=tok_string_string+"L"
+                elif (re.match("[a-z]",i)):
+                    tok_string_string=tok_string_string+"N"
+                elif(re.match("$|%|#|@|!",i)):
+                    tok_string_string=tok_string_string+"Sy"
+                elif(re.match("\s")):
+                    tok_string_string=tok_string_string+"\S"
+                        
+            string_dfa.show_diagram(input_str=tok_string_string,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp["Lex"],view=True)        
         elif temp['Lex'] in Operators:
             pass
         else:

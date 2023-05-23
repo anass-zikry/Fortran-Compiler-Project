@@ -2,4 +2,5 @@ program kk
 implicit none
 integer::x
 read*,x
+print *,"my string is better than ur string @#"
 end program kk
