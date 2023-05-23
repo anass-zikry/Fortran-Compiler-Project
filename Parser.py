@@ -5,13 +5,14 @@ from tkPDFViewer import tkPDFViewer as pdf
 from PIL import Image, ImageTk, ImageOps
 from Scanner import find_token,get_Dicts,getToken_type,Operators
 from nltk.tree import *
-from dfa_test import get_reserver_dict ,get_identfier_dfa,get_operator_dfa,get_string_dfa
+from dfa_test import get_reserver_dict ,get_identfier_dfa,get_operator_dfa,get_string_dfa,get_constant_dfa
 import re 
 
 reserve_DFAs,DFA_order_dict=get_reserver_dict()
 identfier_dfa=get_identfier_dfa()
 string_dfa=get_string_dfa()
 operators_dfa=get_operator_dfa()
+constant_dfa=get_constant_dfa()
 Token_type=[]
 Tokens=[] 
 Errors=[]
@@ -1236,10 +1237,19 @@ def Scan():
                     tok_string_string=tok_string_string+"S"
                   
             print(tok_string_string)      
-            string_dfa.show_diagram(input_str=tok_string_string,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp["Lex"],view=True)        
+            string_dfa.show_diagram(input_str=tok_string_string,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename="constant",view=True)        
         elif temp['Lex'] in Operators:
             print(temp['Lex'])
             operators_dfa.show_diagram(input_str=temp['Lex'],font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename="op",view=True)  
+        elif temp['token_type'] == Token_type.constant :
+            const_str=""
+            for i in temp["Lex"]:
+                if(re.match("[0-9]",i)):
+                    const_str=const_str+"N"
+                elif (re.match("[-\+\.]",i)):
+                    const_str=const_str+i
+                    
+            constant_dfa.show_diagram(input_str=const_str,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp["Lex"],view=True)
         else:
             dfa_index=DFA_order_dict[temp['Lex']]
             reserve_DFAs[dfa_index].show_diagram(input_str=temp['Lex'],font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp["Lex"],view=True)

@@ -455,6 +455,21 @@ dfa_Parenthesis = VisualDFA(
 # dfa_Parenthesis.show_diagram(font_size=9, arrow_size=0.2)
 reserve_DFAs.append(dfa_Parenthesis)
 
+dfa_constant = VisualDFA(
+    states={"q0", "q1", "q2","q3","q4","q5","phi"},
+    input_symbols={"N",".","-","+"},
+    transitions={
+        "q0": {"N": "q2", "-":"q1","+":"q5",".":"phi"},
+        "q1": {"N":"q2",**{i: "phi" for i in set([".","-","+"])}},
+        "q2": {"N":"q2",".":"q3",**{i: "phi" for i in set(["-","+"])}},
+        "q3": {"N":"q4",**{i: "phi" for i in set([".","-","+"])}},
+        "q4": {"N":"q4",**{i: "phi" for i in set([".","-","+"])}},
+        "q5": {"N":"q2",**{i: "phi" for i in set([".","-","+"])}},
+        "phi":{**{i: "phi" for i in set(["N",".","-","+"])}},
+    },
+    initial_state="q0",
+    final_states={"q4","q2"}
+)
 
 def get_reserver_dict():
     return (reserve_DFAs,DFA_order_dict)
@@ -468,3 +483,5 @@ def get_string_dfa():
 def get_identfier_dfa():
     return dfa_identfier
 # reserve_DFAs[6].show_diagram(font_size=9, arrow_size=0.2,view=True)
+def get_constant_dfa():
+    return dfa_constant
