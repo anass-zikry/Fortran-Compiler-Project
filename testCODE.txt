@@ -1,7 +1,10 @@
 program kk
       
 implicit none
+
+integer::u
 real,parameter::x=540.506
+u=8+6*2/3
 read*,x
 print *, 'my string is better than ur string @'
 end program kk

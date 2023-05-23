@@ -1275,33 +1275,33 @@ def RelationalOp(i):
     return RelationalOp_dict
 
 
-def LogicalOrIdentifier(i):
-    LogicalOrIdentifier_dict = dict()
-    LogicalOrIdentifier_children = []
-    last_index = i
-    if i < len(Tokens):
-        temp = Tokens[i].to_dict()
-        if temp['token_type'] in [Token_type.true, Token_type.false]:
-            dict1 = LogicalVal(i)
-            LogicalOrIdentifier_children.append(dict1['node'])
-            last_index = dict1['index']
-        elif temp['token_type'] == Token_type.identifier:
-            dict1 = IdentifierList(i)
-            LogicalOrIdentifier_children.append(dict1['node'])
-            last_index = dict1['index']
-        else:
-            match1 = Match(Token_type.Error, i)
-            LogicalOrIdentifier_children.append(match1['node'])
-            last_index = match1['index']
-    else:
-        match1 = Match(Token_type.Error, i)
-        LogicalOrIdentifier_children.append(match1['node'])
-        last_index = match1['index']
-    LogicalOrIdentifier_node = Tree(
-        "LogicalOrIdentifier", LogicalOrIdentifier_children)
-    LogicalOrIdentifier_dict['node'] = LogicalOrIdentifier_node
-    LogicalOrIdentifier_dict['index'] = last_index
-    return LogicalOrIdentifier_dict
+# def LogicalOrIdentifier(i):
+#     LogicalOrIdentifier_dict = dict()
+#     LogicalOrIdentifier_children = []
+#     last_index = i
+#     if i < len(Tokens):
+#         temp = Tokens[i].to_dict()
+#         if temp['token_type'] in [Token_type.true, Token_type.false]:
+#             dict1 = LogicalVal(i)
+#             LogicalOrIdentifier_children.append(dict1['node'])
+#             last_index = dict1['index']
+#         elif temp['token_type'] == Token_type.identifier:
+#             dict1 = IdentifierList(i)
+#             LogicalOrIdentifier_children.append(dict1['node'])
+#             last_index = dict1['index']
+#         else:
+#             match1 = Match(Token_type.Error, i)
+#             LogicalOrIdentifier_children.append(match1['node'])
+#             last_index = match1['index']
+#     else:
+#         match1 = Match(Token_type.Error, i)
+#         LogicalOrIdentifier_children.append(match1['node'])
+#         last_index = match1['index']
+#     LogicalOrIdentifier_node = Tree(
+#         "LogicalOrIdentifier", LogicalOrIdentifier_children)
+#     LogicalOrIdentifier_dict['node'] = LogicalOrIdentifier_node
+#     LogicalOrIdentifier_dict['index'] = last_index
+#     return LogicalOrIdentifier_dict
 
 
 def LogicalOrConst(i):
