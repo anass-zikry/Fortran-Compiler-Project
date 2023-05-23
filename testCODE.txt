@@ -1,6 +1,6 @@
 program kk
 implicit none
-integer::x
+real,parameter::x=540.506
 read*,x
 print *, 'my string is better than ur string @'
 end program kk
