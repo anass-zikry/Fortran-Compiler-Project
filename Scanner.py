@@ -112,19 +112,20 @@ Errors = []
 Regex_dict = {
     "^\s*(program)\s+([a-z]\w*)\s*$": "header",
     "^\s*(implicit)\s+(none)\s*$": "implicit none",
-    "^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$": "type decl no char",
-    "^\s*(character)\s*(?:(\()\s*(len)\s*(=)\s*([a-z]\w*|[1-9]\d*)\s*(\)))?\s*(::)\s*([a-z]\w*)\s*(?:(,)\s*([a-z]\w*))*\s*$": "char type decl",
+    # "^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$": "type decl no char",
+    # "^\s*(character)\s*(?:(\()\s*(len)\s*(=)\s*([a-z]\w*|[1-9]\d*)\s*(\)))?\s*(::)\s*([a-z]\w*)\s*(?:(,)\s*([a-z]\w*))*\s*$": "char type decl",
     "^\s*(integer|real|complex|logical)\s*(?:(,)\s*(parameter))\s*(::)\s*([a-z]\w*)\s*(=)\s*(?:(-|\+)?([0-9]+|(-|\+)?[0-9]+.?[0-9]*|((\()\s*(-|\+)?[0-9]+.[0-9]+\s*(,)\s*(-|\+)?[0-9]+.[0-9]+\s*(\)))|(.true.|.false.)))\s*$": "constant type decl no char",
     "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*((,)\s*(parameter))\s*(::)\s*([a-z]w*)\s*(=)\s*(\'(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\\\s])*\')\s*$": "char constant type decl1",
     "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*((,)\s*(parameter))\s*(::)\s*([a-z]w*)\s*(=)\s*(\"(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\\\s])*\")\s*$": "char constant type decl2",
-    "^\s*(read)\s*(\*)\s*(,)\s*([a-z]\w*)(\s*(,)\s*([a-z]\w*))*\s*$": "read",
-    "^\s*(print)\s*(\*)\s*(,)\s*((?:[a-z]\w*|[0-9]+|\'(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\s])*\'))\s*$": "print1",
-    "^\s*(print)\s*(\*)\s*(,)\s*((?:[a-z]\w*|[0-9]+|\"(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\s])*\"))\s*$": "print2",
-    "^\s*([a-z]\w*)\s*(=)\s*(?:(?:([a-z]\w*)|(\d+)|(\d+\.\d+))(?:\s*([\*/\-\+])\s*(?:([a-z]\w*)|(\d+)|(\d+\.\d+)))*|(\.true\.|\.false\.))\s*$": "assignment",
-    "^\s*(if)\s*(\()\s*((([a-z]\w*)|[0-9]+)\s*(<|>|<=|>=|==|/=)\s*(([a-z]\w*)|[0-9]+)|([a-z]\w*)|(\.true|false\.|))\s*(\))\s*(then)\s*$": "if",
+    # "^\s*(read)\s*(\*)\s*(,)\s*([a-z]\w*)(\s*(,)\s*([a-z]\w*))*\s*$": "read",
+    # "^\s*(print)\s*(\*)\s*(,)\s*((?:[a-z]\w*|[0-9]+|\'(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\s])*\'))\s*$": "print1",
+    # "^\s*(print)\s*(\*)\s*(,)\s*((?:[a-z]\w*|[0-9]+|\"(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\s])*\"))\s*$": "print2",
+    # "^\s*([a-z]\w*)\s*(=)\s*(?:(?:([a-z]\w*)|(\d+)|(\d+\.\d+))(?:\s*([\*/\-\+])\s*(?:([a-z]\w*)|(\d+)|(\d+\.\d+)))*|(\.true\.|\.false\.))\s*$": "assignment",
+    # "^\s*(if)\s*(\()\s*((([a-z]\w*)|[0-9]+)\s*(<|>|<=|>=|==|/=)\s*(([a-z]\w*)|[0-9]+)|([a-z]\w*)|(\.true|false\.|))\s*(\))\s*(then)\s*$": "if",
     "^\s*(do)\s+([a-z]\w*)\s*(=)\s*((-|\+)?[0-9]+)\s*(,)\s*([a-z]\w*|(-|\+)?[0-9]+)\s*((,)\s*([a-z]\w*|(-|\+)?[0-9]+))?\s*$":"do",
 
 }
+
 
 
 def find_token(text):
@@ -142,7 +143,6 @@ def find_token(text):
             if m:
                 lexems = m.groups()
                 # print(lexems)
-
                 break
         # if re.match("^\s*(program)\s+([a-z]\w*)\s*$",line) :
         #     lexems=re.match("^\s*(program)\s+([a-z]\w*)\s*$",line).groups()
