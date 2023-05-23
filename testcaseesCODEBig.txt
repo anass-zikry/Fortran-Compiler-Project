@@ -1,0 +1,54 @@
+program kk 
+implicit none! mmmmmmmmm
+integer::x,y
+y=20
+read,x
+!check whether x is bigger than 10
+if (x<10) then
+print,
+print,x,"why is it smaller than 10"
+else 
+print,x,"it is bigger than 10"
+end if
+do i=0,y,2
+print*,"y@",y
+end do !to end za do
+end program kk
+
+program yy
+
+implicit none
+complex, parameter :: z=(3.0,2.0)
+end program yy 
+
+program bb
+implicit none
+complex :: z
+z=(3.0,2.0)
+if(z==5.0) then 
+do z=9.0,40,2
+print * , z , 10 
+end do
+else 
+if(z>3) then 
+print* , 3.4
+end if
+end program bb
+
+program tt
+implicit none
+
+integer :: x
+logical :: y
+y=.true.
+
+if(y) then
+x=40
+if(x/=33)then
+x=22
+if(x>=44)then
+print *,"hajsjingjn%^&**^*("
+end if
+end if
+end if
+end program tt
