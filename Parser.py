@@ -1215,17 +1215,18 @@ def Scan():
         
             tok_string_string=""
             for i in temp["Lex"]:
-                if(re.match("'|\"",i)):
+                if(re.match("['\"]",i)):
                     tok_string_string=tok_string_string+i
                 elif (re.match("[a-z]",i)):
                     tok_string_string=tok_string_string+"L"
-                elif (re.match("[a-z]",i)):
+                elif (re.match("[0-9]",i)):
                     tok_string_string=tok_string_string+"N"
-                elif(re.match("$|%|#|@|!",i)):
-                    tok_string_string=tok_string_string+"Sy"
-                elif(re.match("\s")):
-                    tok_string_string=tok_string_string+"\S"
-                        
+                elif(re.match("[\$%#@!]",i)):
+                    tok_string_string=tok_string_string+"Y"
+                elif(re.match("\s",i)):
+                    tok_string_string=tok_string_string+"S"
+                  
+            print(tok_string_string)      
             string_dfa.show_diagram(input_str=tok_string_string,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp["Lex"],view=True)        
         elif temp['Lex'] in Operators:
             pass

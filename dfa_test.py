@@ -399,18 +399,18 @@ reserve_DFAs.append(dfa_print)
 
 dfa_string = VisualDFA(
     states={"q0", "q1", "q2", "q3", "phi"},
-    input_symbols={"'", "\"", "L", "N", "Sy", "\S"},
+    input_symbols={"'", "\"", "L", "N", "Y","S"},
     transitions={
-        "q0": {"'": "q1", "\"": "q2", **{i: "phi" for i in set(["L", "N", "Sy", "\S"])}},
-        "q1": {"'": "q3", **{i: "q1" for i in set(["L", "N", "Sy", "\S", "\""])}},
-        "q2": {"\"": "q3", **{i: "q2" for i in set(["L", "N", "Sy", "\S", "'"])}},
-        "q3": {"'": "q1", "\"": "q2", **{i: "phi" for i in set(["L", "N", "Sy", "\S"])}},
-        "phi": {**{i: "phi" for i in set(["'", "\"", "L", "N", "Sy", "\S"])}},
+        "q0": {"'": "q1", "\"":"q2",**{i: "phi" for i in set(["L", "N", "Y","S"])}},
+        "q1": {"'": "q3", **{i: "q1" for i in set(["L", "N", "Y","S","\""])}},
+        "q2": {"\"": "q3", **{i: "q2" for i in set(["L", "N", "Y","S","'"])}},
+        "q3": {"'": "q1","\"":"q2", **{i: "phi" for i in set(["L", "N", "Y","S"])}},
+        "phi":{**{i: "phi" for i in set(["'", "\"", "L", "N", "Y","S"])}},
     },
     initial_state="q0",
     final_states={"q3"}
 )
-dfa_string.show_diagram(font_size=9, arrow_size=0.2)
+#dfa_string.show_diagram(font_size=9, arrow_size=0.2)
 
 dfa_operators = VisualDFA(
     states={"q0", "q1", "q2", "q3", "q4", "q5", "q6", "q7",
