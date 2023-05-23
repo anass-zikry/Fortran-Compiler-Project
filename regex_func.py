@@ -44,6 +44,8 @@ def get_regex_groups(line):
     
     
 def header_regex(line):
+
+
     return re.match("^\s*(program)?\s+([a-z]\w*)?\s*$",line)
 
 def implicit_regex(line):
@@ -65,59 +67,71 @@ def do_regex(line) :
 
 def Type_decl_no_char_regex(line):
     if re.match(".^\s*(integer|real|complex|logical)?\s*(?:(,)?\s*(parameter)?)?\s*(::)?\s*([a-z]\w*)?\s*(?:(,)\s*([a-z]\w*))*\s*$",line):
+
         # le = "integer::x,y,z,o"
         c=line.count(",")
         rep=''
         for i in range(c):
             rep += '(?:(,)\s*([a-z]\w*))'
+
         return re.match(".^\s*(integer|real|complex|logical)?\s*(?:(,)?\s*(parameter)?)?\s*(::)?\s*([a-z]\w*)?\s*"+rep+"\s*$", line)
+
     
     
     
 def char_type_decl_regex(line):
    # le = "character (len =80) ::x,y,z"
+
    if re.match("^\s*(character)?\s*(?:(\()?\s*(len)?\s*(=)?\s*([a-z]\w*|[1-9]\d*)?\s*(\)))?\s*(::)?\s*([a-z]\w*)?\s*(?:(,)\s*([a-z]\w*))*\s*$",line):
+
         c=line.count(",")
         rep=''
         for i in range(c):
             rep += '(?:(,)\s*([a-z]\w*))'
+
         return re.match("^\s*(character)?\s*(?:(\()?\s*(len)?\s*(=)?\s*([a-z]\w*|[1-9]\d*)?\s*(\)))?\s*(::)?\s*([a-z]\w*)?\s*"+rep+"\s*$", line)
 
 def read_regex(line):
     if re.match("^\s*(read)?\s*(\*)?\s*(,)?\s*([a-z]\w*)?\s*(,)?\s*\s*(?:(,)\s*([a-z]\w*))*\s*$",line):
+
     # le = "read*,x,y,z"
         c=line.count(",")
         rep=''
         for i in range(c-1):
             rep += '(?:(,)\s*([a-z]\w*))'
     
+
         return re.match("^\s*(read)?\s*(\*)?\s*(,)?\s*([a-z]\w*)?\s*(,)?\s*\s*"+rep+"\s*$", line)
     
     
 def print1_regex(line):
     if re.match("^\s*(print)?\s*(\*)?\s*(?:(,)\s*((?:[a-z]\w*|[0-9]+|\'(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\s])*\')))*\s*$",line):
+
         # le = "print*,x,y,'z'"
         c=line.count(",")
         rep=''
         for i in range(c):
             rep += '(?:(,)\s*((?:[a-z]\w*|[0-9]+|\'(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\s])*\')))'
         
+
         return re.match("^\s*(print)?\s*(\*)?\s*"+rep+"\s*$", line)
     
 
 def print2_regex(line):
     if re.match("^\s*(print)?\s*(\*)?\s*(?:(,)\s*((?:[a-z]\w*|[0-9]+|\"(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\s])*\")))*\s*$",line):
+
         # le = 'print*,x,y,"z"'
         c=line.count(",")
         rep=''
         for i in range(c):
             rep += '(?:(,)\s*((?:[a-z]\w*|[0-9]+|\"(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\s])*\")))'
-    
+
         return re.match("^\s*(print)?\s*(\*)?\s*"+rep+"\s*$", line)
     
     
 def assignment_regex(line):
     if re.match("^\s*([a-z]\w*)?\s*(=)?\s*(?:(?:([a-z]\w*)?|(\d+)?|(\d+\.\d+)?)(?:\s*([\*/\-\+])\s*(?:([a-z]\w*)|(\d+)|(\d+\.\d+)))*|(\.true\.|\.false\.)?)\s*$",line):
+
         #le = "x=5+7-8+9.9"
         c=line.count("+")
         c=c+line.count("-")
@@ -127,12 +141,16 @@ def assignment_regex(line):
         for i in range(c):
             rep += '(?:\s*([\*/\-\+])\s*(?:([a-z]\w*)|(\d+)|(\d+\.\d+)))'
         
+
         return re.match("^\s*([a-z]\w*)?\s*(=)?\s*(?:(?:([a-z]\w*)?|(\d+)?|(\d+\.\d+)?)"+rep+"|(\.true\.|\.false\.)?)\s*$", line)
+
     
     
 def if_regex(line):
         #le = "if(x==9>0<10>=7<=9/=77) then"
+
      if re.match("^\s*(if)?\s*(\()\s*(?:([a-z]\w*)?|([0-9]+)?)\s*(?:(<|>|<=|>=|==|/=)\s*(([a-z]\w*)|[0-9]+)|([a-z]\w*)|(\.true|false\.|))*\s*(\))?\s*(then)?\s*",line):
+
         c=0
         j=0
         for i in range(len(line)):
@@ -144,12 +162,16 @@ def if_regex(line):
                 elif re.match("(<|>)",line[i]):
 
                     c+=1
+
         
+
         rep=''
         for i in range(c):
             rep += '(?:(<|>|<=|>=|==|/=)\s*(([a-z]\w*)|[0-9]+)|([a-z]\w*)|(\.true|false\.|))'
         
+
         return re.match("^\s*(if)?\s*(\()\s*(?:([a-z]\w*)?|([0-9]+)?)\s*"+rep+"\s*(\))?\s*(then)?\s*", line)
+
     
     
 
