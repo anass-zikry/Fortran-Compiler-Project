@@ -1,8 +1,6 @@
 import tkinter as tk
 import pandas
 import pandastable as pt
-from tkPDFViewer import tkPDFViewer as pdf
-from PIL import Image, ImageTk, ImageOps
 from Scanner import find_token,get_Dicts,getToken_type,Operators
 from nltk.tree import *
 from dfa_test import get_reserver_dict ,get_identfier_dfa,get_operator_dfa,get_string_dfa,get_constant_dfa
@@ -23,8 +21,10 @@ Errors=[]
 comment_indeces=[]
 comment_token=0
 def skip_comments():
+    global Tokens
     for i in range(len(Tokens)):
         if Tokens[i].to_dict()['token_type'] == Token_type.ExclMark :
+            global comment_indeces
             comment_indeces.append(i)
     for commentIndex in comment_indeces:
         global comment_token
@@ -45,7 +45,7 @@ def Match(TT,i) :
         else:
             out['node']=['error']
             out['index']=i
-            Errors.append("Syntax Error: "+TokDict['Lex'])
+            Errors.append("Syntax Error: "+TokDict['Lex']+"Expected:"+str(TT))
             return out
     else :
         out['node']=['error']
