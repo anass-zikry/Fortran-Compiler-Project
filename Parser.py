@@ -1229,11 +1229,11 @@ def Scan():
             print(tok_string_string)      
             string_dfa.show_diagram(input_str=tok_string_string,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp["Lex"],view=True)        
         elif temp['Lex'] in Operators:
-            pass
+            operators_dfa.show_diagram(input_str=temp['Lex'],font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp["Lex"],view=True)  
         else:
-            pass
-        dfa_index=DFA_order_dict[temp['Lex']]
-        reserve_DFAs[dfa_index].show_diagram(input_str=temp['Lex'],font_size=9, arrow_size=0.2,format_type='jpg',path="Diagrams/",filename=temp["Lex"])
+            dfa_index=DFA_order_dict[temp['Lex']]
+            reserve_DFAs[dfa_index].show_diagram(input_str=temp['Lex'],font_size=9, arrow_size=0.2,format_type='jpg',path="Diagrams/",filename=temp["Lex"])
+        
         # loop_dfa(temp,dfa_index)
         dfa_di=tk.Toplevel()
         dfa_di.title(temp["Lex"])
