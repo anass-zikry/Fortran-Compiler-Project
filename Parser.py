@@ -6,7 +6,7 @@ from PIL import Image, ImageTk, ImageOps
 from Scanner import find_token,get_Dicts,getToken_type,Operators
 from nltk.tree import *
 from dfa_test import get_reserver_dict ,get_identfier_dfa,get_operator_dfa,get_string_dfa
-import re 
+import re
 
 reserve_DFAs,DFA_order_dict=get_reserver_dict()
 identfier_dfa=get_identfier_dfa()
@@ -330,14 +330,36 @@ def NamedConstant(i):
     NamedConstant_children.append(match1['node'])
     match2 = Match(Token_type.EqualOp, match1['index'])
     NamedConstant_children.append(match2['node'])
-    dict3 = LogicalOrConst(match2['index'])
+    dict3 = NamedConstant2(match2['index'])
     NamedConstant_children.append(dict3['node'])
     NamedConstant_node = Tree("NamedConstant", NamedConstant_children)
     NamedConstant_dict['node'] = NamedConstant_node
     NamedConstant_dict['index'] = dict3['index']
     return NamedConstant_dict
-
-
+def NamedConstant2(i):
+    NamedConstant2_dict=dict()
+    NamedConstant2_children=[]
+    last_index=i
+    if i<len(Tokens):
+        temp=Tokens[i].to_dict()
+        if temp['token_type'] in [Token_type.true,Token_type.false,Token_type.constant]:
+            dict1=LogicalOrConst(i)
+            NamedConstant2_children.append(dict1['node'])
+            last_index=dict1['index']
+        elif temp['token_type'] == Token_type.openParenthesis :
+            dict1=ComplexNotation(i)
+            NamedConstant2_children.append(dict1['node'])
+            last_index=dict1['index']
+    else :
+        match1=Match(Token_type.Error,i)
+        NamedConstant2_children.append(match1['node'])
+        last_index=match1['index']
+    NamedConstant2_node=Tree("NamedConstant2",NamedConstant2_children)
+    NamedConstant2_dict['node']=NamedConstant2_node
+    NamedConstant2_dict['index']=last_index
+    return NamedConstant2_dict
+        
+    
 def CharacterDType(i):
     CharacterDType_dict = dict()
     CharacterDType_children = []
@@ -506,7 +528,10 @@ def Relations(i):
             dict1 = LogicalVal(i)
             Relations_children.append(dict1['node'])
             last_index = dict1['index']
-
+        elif temp['token_type'] == Token_type.openParenthesis:
+            dict1=ComplexNotation(i)
+            Relations_children.append(dict1['node'])
+            last_index=dict1['index']
         else:
             match1 = Match(Token_type.Error, i)
             Relations_children.append(match1['node'])
@@ -1002,34 +1027,71 @@ def Conditional(i):
     Conditional_dict['index'] = last_index
     return Conditional_dict
 
+def ComplexNotation(i):
+    ComplexNotation_dict=dict()
+    ComplexNotation_children=[]
+    match1=Match(Token_type.openParenthesis,i)
+    ComplexNotation_children.append(match1['node'])
+    dict2=NegorPos(match1['index'])
+    ComplexNotation_children.append(dict2['node'])
+    match3=Match(Token_type.real,dict2['index'])
+    ComplexNotation_children.append(match3['node'])
+    match4=Match(Token_type.Comma,match3['index'])
+    ComplexNotation_children.append(match4['node'])
+    dict5=NegorPos(match4['index'])
+    ComplexNotation_children.append(dict5['node'])
+    match6=Match(Token_type.real,dict5['index'])
+    ComplexNotation_children.append(match6['node'])
+    match7=Match(Token_type.closeParenthesis,match6['index'])
+    ComplexNotation_children.append(match7['node'])
+    if None in ComplexNotation_children:
+        ComplexNotation_children.remove(None)
+    ComplexNotation_node=Tree("ComplexNotation",ComplexNotation_children)
+    ComplexNotation_dict['node']=ComplexNotation_node
+    ComplexNotation_dict['index']=match7['index']
+    return ComplexNotation_dict
 
 def IdorConst(i):
     IdorConst_dict = dict()
     IdorConst_children = []
+    dict1=NegorPos(i)
+    IdorConst_children.append(dict1['node'])
+    dict2=IdorConst2(dict1['index'])
+    IdorConst_children.append(dict2['node'])
+    if None in IdorConst_children:
+        IdorConst_children.remove(None)
+    IdorConst_node=Tree("IdorConst",IdorConst_children)
+    IdorConst_dict['node']=IdorConst_node
+    IdorConst_dict['index']=dict2['index']
+    return IdorConst_dict
+
+def IdorConst2(i):
+    IdorConst2_dict = dict()
+    IdorConst2_children = []
     last_index = i
     if i < len(Tokens):
         temp = Tokens[i].to_dict()
         if temp['token_type'] == Token_type.identifier:
             match1 = Match(Token_type.identifier, i)
-            IdorConst_children.append(match1['node'])
+            IdorConst2_children.append(match1['node'])
             last_index = match1['index']
         elif temp['token_type'] == Token_type.constant:
             match1 = Match(Token_type.constant, i)
-            IdorConst_children.append(match1['node'])
+            IdorConst2_children.append(match1['node'])
             last_index = match1['index']
 
         else:
             match1 = Match(Token_type.Error, i)
-            IdorConst_children.append(match1['node'])
+            IdorConst2_children.append(match1['node'])
             last_index = match1['index']
     else:
         match1 = Match(Token_type.Error, i)
-        IdorConst_children.append(match1['node'])
+        IdorConst2_children.append(match1['node'])
         last_index = match1['index']
-    IdorConst_node = Tree("IdorConst", IdorConst_children)
-    IdorConst_dict['node'] = IdorConst_node
-    IdorConst_dict['index'] = last_index
-    return IdorConst_dict
+    IdorConst2_node = Tree("IdorConst2", IdorConst2_children)
+    IdorConst2_dict['node'] = IdorConst2_node
+    IdorConst2_dict['index'] = last_index
+    return IdorConst2_dict
 
 
 def RelationalOp(i):
@@ -1160,6 +1222,32 @@ def LogicalVal(i):
     LogicalVal_dict['index'] = last_index
     return LogicalVal_dict
 
+def NegorPos(i):
+    NegorPos_dict=dict()
+    NegorPos_children=[]
+    last_index=i
+    if i<len(Tokens):
+        temp=Tokens[i].to_dict()
+        if temp['token_type']==Token_type.MinusOp:
+            match1=Match(Token_type.MinusOp,i)
+            NegorPos_children.append(match1['node'])
+            last_index=match1['index']
+        elif temp['token_type']==Token_type.PlusOp:
+            match1=Match(Token_type.PlusOp,i)
+            NegorPos_children.append(match1['node'])
+            last_index=match1['index']
+        else:
+            NegorPos_dict['node']=None
+            NegorPos_dict['index']=i
+            return NegorPos_dict
+    else:
+        match1=Match(Token_type.Error,i)
+        NegorPos_children.append(match1['node'])
+        last_index=match1['index']
+    NegorPos_node=Tree("NegorPos",NegorPos_children)
+    NegorPos_dict['node']=NegorPos_node
+    NegorPos_dict['index']=last_index
+    return NegorPos_dict
 
 #GUI
 root= tk.Tk()
