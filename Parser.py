@@ -1173,7 +1173,7 @@ label2.config(font=('helvetica', 10))
 canvas1.create_window(300, 100, window=label2)
 entry1 = tk.Entry(root)
 canvas1.create_window(200, 140, window=entry1)
-
+ 
 def Scan():
     filePath = entry1.get()
     with open(filePath) as f:
@@ -1187,7 +1187,16 @@ def Scan():
     skip_comments()
     Node=ProgramStart()
     add_comments()
-    df=pandas.DataFrame.from_records([t.to_dict() for t in Tokens])
+    showable_tokens=[]
+    
+    for t in Tokens : 
+        t=t.to_dict() 
+        if(t["token_type"]==Token_type.delimiter):
+            continue
+        else:
+         showable_tokens.append(t)
+         
+    df=pandas.DataFrame.from_records([t for t in showable_tokens])
     # def update_buttons():
     #     for i, row in df.iterrows():
     #         button = tk.Button(root, text='DFA', command=lambda key= i: DFA_click(key))
@@ -1199,7 +1208,7 @@ def Scan():
     #     for i in range(len(tok["Lex"])):
     #         reserve_DFAs[dfa_index].show_diagram(input_str=tok['Lex'][:i],font_size=9, arrow_size=0.2,format_type='jpg',path="Diagrams/",filename=tok["Lex"])
     def DFA_click(Token_index):
-        temp=Tokens[Token_index].to_dict()
+        temp=showable_tokens[Token_index]
         if temp['token_type'] == Token_type.identifier :
             idntString=""
             for i in temp["Lex"]:
@@ -1265,7 +1274,8 @@ def Scan():
     DFA_wind=tk.Toplevel()
     DFA_wind.title('DFA Diagrams')
     DFA_canvas=tk.Canvas(DFA_wind)
-    for i in range(len(Tokens)):
+    for i in range(len(showable_tokens)):
+        
         dfa_button=tk.Button(DFA_canvas, text='DFA'+str(i+1), command=lambda key= i: DFA_click(key),padx=100)
         dfa_button.pack()
     DFA_canvas.pack()
