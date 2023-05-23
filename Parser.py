@@ -1136,13 +1136,9 @@ def Conditional(i):
     if i < len(Tokens):
         temp = Tokens[i].to_dict()
         if temp['token_type'] in [Token_type.identifier, Token_type.constant]:
-            dict1 = Expression(i)
+            dict1 = BooleanExp(i)
             Conditional_children.append(dict1['node'])
-            dict2 = RelationalOp(dict1['index'])
-            Conditional_children.append(dict2['node'])
-            dict3 = Expression(dict2['index'])
-            Conditional_children.append(dict3['node'])
-            last_index = dict3['index']
+            last_index = dict1['index']
         elif temp['token_type'] == Token_type.identifier:
             match1 = Match(Token_type.identifier, i)
             Conditional_children.append(match1['node'])
@@ -1163,6 +1159,119 @@ def Conditional(i):
     Conditional_dict['node'] = Conditional_node
     Conditional_dict['index'] = last_index
     return Conditional_dict
+
+def BooleanExp(i):
+    BooleanExp_dict = dict()
+    BooleanExp_children = []
+    dict1=RelationalTerm(i)
+    BooleanExp_children.append(dict1['node'])
+    dict2=BooleanExp2(dict1['index'])
+    BooleanExp_children.append(dict2['node'])
+    if None in BooleanExp_children:
+        BooleanExp_children.remove(None)
+    BooleanExp_node=Tree("BooleanExp",BooleanExp_children)
+    BooleanExp_dict['node']=BooleanExp_node
+    BooleanExp_dict['index']=dict2['index']
+    return BooleanExp_dict
+
+def BooleanExp2(i):
+    BooleanExp2_dict = dict()
+    BooleanExp2_children = []
+    last_index = i
+    if i < len(Tokens):
+        temp = Tokens[i].to_dict()
+        if temp['token_type'] in [Token_type.EqualEqualOp, Token_type.NotEqualOp]:
+            dict1 = EqualityOp(i)
+            BooleanExp2_children.append(dict1['node'])
+            dict2=RelationalTerm(dict1['index'])
+            BooleanExp2_children.append(dict2['node'])
+            dict3=BooleanExp2(dict2['index'])
+            BooleanExp2_children.append(dict3['node'])
+            last_index = dict3['index']
+        else:
+            BooleanExp2_dict['node'] = None
+            BooleanExp2_dict['index'] = i
+            return BooleanExp2_dict
+    else:
+        match1 = Match(Token_type.Error, i)
+        BooleanExp2_children.append(match1['node'])
+        last_index = match1['index']
+    if None in BooleanExp2_children:
+        BooleanExp2_children.remove(None)
+    BooleanExp2_node = Tree("BooleanExp2", BooleanExp2_children)
+    BooleanExp2_dict['node'] = BooleanExp2_node
+    BooleanExp2_dict['index'] = last_index
+    return BooleanExp2_dict
+
+def RelationalTerm(i):
+    RelationalTerm_dict = dict()
+    RelationalTerm_children = []
+    dict1=Expression(i)
+    RelationalTerm_children.append(dict1['node'])
+    dict2=RelationalTerm2(dict1['index'])
+    RelationalTerm_children.append(dict2['node'])
+    if None in RelationalTerm_children:
+        RelationalTerm_children.remove(None)
+    RelationalTerm_node=Tree("RelationalTerm",RelationalTerm_children)
+    RelationalTerm_dict['node']=RelationalTerm_node
+    RelationalTerm_dict['index']=dict2['index']
+    return RelationalTerm_dict
+
+def RelationalTerm2(i):
+    RelationalTerm2_dict = dict()
+    RelationalTerm2_children = []
+    last_index = i
+    if i < len(Tokens):
+        temp = Tokens[i].to_dict()
+        if temp['token_type'] in [Token_type.GreaterThanOp, Token_type.LessThanOp,Token_type.LessThanEqualOp,Token_type.GreaterThanEqualOp]:
+            dict1 = RelationalOp(i)
+            RelationalTerm2_children.append(dict1['node'])
+            dict2=Expression(dict1['index'])
+            RelationalTerm2_children.append(dict2['node'])
+            dict3=RelationalTerm2(dict2['index'])
+            RelationalTerm2_children.append(dict3['node'])
+            last_index = dict3['index']
+        else:
+            RelationalTerm2_dict['node'] = None
+            RelationalTerm2_dict['index'] = i
+            return RelationalTerm2_dict
+    else:
+        match1 = Match(Token_type.Error, i)
+        RelationalTerm2_children.append(match1['node'])
+        last_index = match1['index']
+    if None in RelationalTerm2_children:
+        RelationalTerm2_children.remove(None)
+    RelationalTerm2_node = Tree("RelationalTerm2", RelationalTerm2_children)
+    RelationalTerm2_dict['node'] = RelationalTerm2_node
+    RelationalTerm2_dict['index'] = last_index
+    return RelationalTerm2_dict
+
+def EqualityOp(i):
+    EqualityOp_dict = dict()
+    EqualityOp_children = []
+    last_index = i
+    if i < len(Tokens):
+        temp = Tokens[i].to_dict()
+        if temp['token_type'] == Token_type.EqualEqualOp:
+            match1 = Match(Token_type.EqualEqualOp, i)
+            EqualityOp_children.append(match1['node'])
+            last_index = match1['index']
+        elif temp['token_type'] == Token_type.NotEqualOp:
+            match1 = Match(Token_type.NotEqualOp, i)
+            EqualityOp_children.append(match1['node'])
+            last_index = match1['index']
+        else:
+            match1 = Match(Token_type.Error, i)
+            EqualityOp_children.append(match1['node'])
+            last_index = match1['index']
+    else:
+        match1 = Match(Token_type.Error, i)
+        EqualityOp_children.append(match1['node'])
+        last_index = match1['index']
+    EqualityOp_node = Tree("EqualityOp", EqualityOp_children)
+    EqualityOp_dict['node'] = EqualityOp_node
+    EqualityOp_dict['index'] = last_index
+    return EqualityOp_dict
 
 def ComplexNotation(i):
     ComplexNotation_dict=dict()
