@@ -48,7 +48,7 @@ DFA_order_dict = {
     "read": 16,
     "print": 17,
     "paranthis": 18,
-    "operators":19
+    
 }
 dfa_identfier = VisualDFA(
     states={"q0", "q1", "q2"},
@@ -438,7 +438,8 @@ dfa_operators = VisualDFA(
     final_states={"q2", "q1", "q3", "q4", "q6", "q7",
                   "q8", "q9", "q10", "q11", "q12", "q13", "q14", }
 )
-dfa_operators.show_diagram(font_size=9, arrow_size=0.2)
+#dfa_operators.show_diagram(font_size=9, arrow_size=0.2)
+
 
 dfa_Parenthesis = VisualDFA(
     states={"q0", "q1", "q2", "phi"},
@@ -459,4 +460,12 @@ reserve_DFAs.append(dfa_Parenthesis)
 def get_reserver_dict():
     return (reserve_DFAs,DFA_order_dict)
 
+def get_operator_dfa():
+   return dfa_operators
+
+def get_string_dfa():
+    return dfa_string
+
+def get_identfier_dfa():
+    return dfa_identfier
 # reserve_DFAs[6].show_diagram(font_size=9, arrow_size=0.2,view=True)
