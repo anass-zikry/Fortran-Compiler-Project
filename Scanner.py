@@ -1,6 +1,6 @@
-from enum import Enum
 import re
-
+from enum import Enum
+from regex_func import get_regex_groups
 
 class Token_type(Enum):  # listing all tokens type
     program = 1
@@ -110,19 +110,19 @@ Tokens = []
 Errors = []
 # To avoid failure for absence of spaces between tokens
 Regex_dict = {
-    "^\s*(program)\s+([a-z]\w*)\s*$": "header",
-    "^\s*(implicit)\s+(none)\s*$": "implicit none",
+    # "^\s*(program)\s+([a-z]\w*)\s*$": "header",
+    # "^\s*(implicit)\s+(none)\s*$": "implicit none",
     # "^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$": "type decl no char",
     # "^\s*(character)\s*(?:(\()\s*(len)\s*(=)\s*([a-z]\w*|[1-9]\d*)\s*(\)))?\s*(::)\s*([a-z]\w*)\s*(?:(,)\s*([a-z]\w*))*\s*$": "char type decl",
-    "^\s*(integer|real|complex|logical)\s*(?:(,)\s*(parameter))\s*(::)\s*([a-z]\w*)\s*(=)\s*(?:(-|\+)?([0-9]+|(-|\+)?[0-9]+.?[0-9]*|((\()\s*(-|\+)?[0-9]+.[0-9]+\s*(,)\s*(-|\+)?[0-9]+.[0-9]+\s*(\)))|(.true.|.false.)))\s*$": "constant type decl no char",
-    "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*((,)\s*(parameter))\s*(::)\s*([a-z]w*)\s*(=)\s*(\'(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\\\s])*\')\s*$": "char constant type decl1",
-    "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*((,)\s*(parameter))\s*(::)\s*([a-z]w*)\s*(=)\s*(\"(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\\\s])*\")\s*$": "char constant type decl2",
+    # "^\s*(integer|real|complex|logical)\s*(?:(,)\s*(parameter))\s*(::)\s*([a-z]\w*)\s*(=)\s*(?:(-|\+)?([0-9]+|(-|\+)?[0-9]+.?[0-9]*|((\()\s*(-|\+)?[0-9]+.[0-9]+\s*(,)\s*(-|\+)?[0-9]+.[0-9]+\s*(\)))|(.true.|.false.)))\s*$": "constant type decl no char",
+    # "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*((,)\s*(parameter))\s*(::)\s*([a-z]w*)\s*(=)\s*(\'(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\\\s])*\')\s*$": "char constant type decl1",
+    # "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*((,)\s*(parameter))\s*(::)\s*([a-z]w*)\s*(=)\s*(\"(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\\\s])*\")\s*$": "char constant type decl2",
     # "^\s*(read)\s*(\*)\s*(,)\s*([a-z]\w*)(\s*(,)\s*([a-z]\w*))*\s*$": "read",
     # "^\s*(print)\s*(\*)\s*(,)\s*((?:[a-z]\w*|[0-9]+|\'(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\s])*\'))\s*$": "print1",
     # "^\s*(print)\s*(\*)\s*(,)\s*((?:[a-z]\w*|[0-9]+|\"(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\s])*\"))\s*$": "print2",
     # "^\s*([a-z]\w*)\s*(=)\s*(?:(?:([a-z]\w*)|(\d+)|(\d+\.\d+))(?:\s*([\*/\-\+])\s*(?:([a-z]\w*)|(\d+)|(\d+\.\d+)))*|(\.true\.|\.false\.))\s*$": "assignment",
     # "^\s*(if)\s*(\()\s*((([a-z]\w*)|[0-9]+)\s*(<|>|<=|>=|==|/=)\s*(([a-z]\w*)|[0-9]+)|([a-z]\w*)|(\.true|false\.|))\s*(\))\s*(then)\s*$": "if",
-    "^\s*(do)\s+([a-z]\w*)\s*(=)\s*((-|\+)?[0-9]+)\s*(,)\s*([a-z]\w*|(-|\+)?[0-9]+)\s*((,)\s*([a-z]\w*|(-|\+)?[0-9]+))?\s*$":"do",
+    # "^\s*(do)\s+([a-z]\w*)\s*(=)\s*((-|\+)?[0-9]+)\s*(,)\s*([a-z]\w*|(-|\+)?[0-9]+)\s*((,)\s*([a-z]\w*|(-|\+)?[0-9]+))?\s*$":"do",
 
 }
 
@@ -132,18 +132,21 @@ def find_token(text):
     for line in text:
         if re.match("\s*\n",line):continue
         comment_flag = False
-        lexems = ()
+        lexems = []
         if "!" in line:
             line = line.split('!')[0]
             comment_flag = True
         line = line.lower()  # convert to lower case
-        for regex in Regex_dict:
-            # print(regex)
-            m = re.match(regex, line)
-            if m:
-                lexems = m.groups()
-                # print(lexems)
-                break
+        lexems=get_regex_groups(line)
+        if lexems == None:
+            lexems=[]
+        # for regex in Regex_dict:
+        #     # print(regex)
+        #     m = re.match(regex, line)
+            # if m:
+            #     lexems = m.groups()
+            #     # print(lexems)
+            #     break
         # if re.match("^\s*(program)\s+([a-z]\w*)\s*$",line) :
         #     lexems=re.match("^\s*(program)\s+([a-z]\w*)\s*$",line).groups()
         # elif re.match("^\s*(implicit)\s+(none)\s*$",line) :

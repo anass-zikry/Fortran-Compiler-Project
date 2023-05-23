@@ -144,7 +144,6 @@ def if_regex(line):
                 elif re.match("(<|>)",line[i]):
 
                     c+=1
-        
         rep=''
         for i in range(c):
             rep += '(?:(<|>|<=|>=|==|/=)\s*(([a-z]\w*)|[0-9]+)|([a-z]\w*)|(\.true|false\.|))'

@@ -1616,12 +1616,17 @@ def Scan():
     # Node=Parse()
     DFA_wind=tk.Toplevel()
     DFA_wind.title('DFA Diagrams')
-    DFA_canvas=tk.Canvas(DFA_wind)
+    DFA_canvas=tk.Canvas(DFA_wind,scrollregion=(0,0,500,500))
+    vbar=tk.Scrollbar(DFA_wind,orient=tk.VERTICAL)
+    vbar.pack(side=tk.RIGHT,fill=tk.Y)
+    vbar.config(command=tk.Canvas.yview)
+    DFA_canvas.config(width=300,height=300)
+    DFA_canvas.config( yscrollcommand=vbar.set)
+    DFA_canvas.pack(side=tk.TOP,expand=True,fill=tk.BOTH)
     for i in range(len(showable_tokens)):
-        
-        dfa_button=tk.Button(DFA_canvas, text='DFA'+str(i+1), command=lambda key= i: DFA_click(key),padx=100)
+        dfa_button=tk.Button(DFA_wind, text='DFA'+str(i+1), command=lambda key= i: DFA_click(key),padx=100)
         dfa_button.pack()
-    DFA_canvas.pack()
+    # DFA_canvas.pack()
         
      
     # to display errorlist
