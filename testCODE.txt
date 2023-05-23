@@ -1,4 +1,5 @@
 program kk
+      
 implicit none
 real,parameter::x=540.506
 read*,x

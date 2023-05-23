@@ -113,7 +113,7 @@ Regex_dict = {
     "^\s*(program)\s+([a-z]\w*)\s*$": "header",
     "^\s*(implicit)\s+(none)\s*$": "implicit none",
     "^\s*(integer|real|complex|logical)\s*((,)\s*(parameter))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$": "type decl no char",
-    "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*(::)\s*([a-z]\w*)\s*((,)\s*([a-z]\w*))*\s*$": "char type decl",
+    "^\s*(character)\s*(?:(\()\s*(len)\s*(=)\s*([a-z]\w*|[1-9]\d*)\s*(\)))?\s*(::)\s*([a-z]\w*)\s*(?:(,)\s*([a-z]\w*))*\s*$": "char type decl",
     "^\s*(integer|real|complex|logical)\s*(?:(,)\s*(parameter))\s*(::)\s*([a-z]\w*)\s*(=)\s*(?:(-|\+)?([0-9]+|(-|\+)?[0-9]+.?[0-9]*|((\()\s*(-|\+)?[0-9]+.[0-9]+\s*(,)\s*(-|\+)?[0-9]+.[0-9]+\s*(\)))|(.true.|.false.)))\s*$": "constant type decl no char",
     "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*((,)\s*(parameter))\s*(::)\s*([a-z]w*)\s*(=)\s*(\'(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\\\s])*\')\s*$": "char constant type decl1",
     "^\s*(character)\s*(\(\s*len\s*=\s*([a-z]\w*|[1-9][0-9]*)\s*\))?\s*((,)\s*(parameter))\s*(::)\s*([a-z]w*)\s*(=)\s*(\"(?:[\w()*&^%$@!{}[\]~`?/\\|,.#<>+=:;-_\\\s])*\")\s*$": "char constant type decl2",
@@ -129,6 +129,7 @@ Regex_dict = {
 
 def find_token(text):
     for line in text:
+        if re.match("\s*\n",line):continue
         comment_flag = False
         lexems = ()
         if "!" in line:
@@ -140,7 +141,7 @@ def find_token(text):
             m = re.match(regex, line)
             if m:
                 lexems = m.groups()
-                print(lexems)
+                # print(lexems)
 
                 break
         # if re.match("^\s*(program)\s+([a-z]\w*)\s*$",line) :
