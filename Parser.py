@@ -44,12 +44,12 @@ def Match(TT,i) :
             return out
         else:
             out['node']=['error']
-            out['index']=i+1
+            out['index']=i
             Errors.append("Syntax Error: "+TokDict['Lex'])
             return out
     else :
         out['node']=['error']
-        out['index']=i+1
+        out['index']=i
         return out
 
 
@@ -518,13 +518,13 @@ def Relations(i):
         temp = Tokens[i].to_dict()
         #################################################
         if temp['token_type'] in [Token_type.identifier, Token_type.constant]:
-            dict1 = IdorConst(i)
+            dict1 = Expression(i)
             Relations_children.append(dict1['node'])
-            dict2 = Relation(dict1['index'])
-            Relations_children.append(dict2['node'])
+            # dict2 = Relation(dict1['index'])
+            # Relations_children.append(dict2['node'])
             if None in Relations_children:
                 Relations_children.remove(None)
-            last_index = dict2['index']
+            last_index = dict1['index']
         elif temp['token_type'] in [Token_type.true, Token_type.false]:
             dict1 = LogicalVal(i)
             Relations_children.append(dict1['node'])
@@ -546,69 +546,152 @@ def Relations(i):
     Relations_dict['index'] = last_index
     return Relations_dict
 
+def Expression(i):
+    Expression_dict=dict()
+    Expression_children=[]
+    dict1=MultTerm(i)
+    Expression_children.append(dict1['node'])
+    dict2=Expression2(dict1['index'])
+    Expression_children.append(dict2['node'])
+    if None in Expression_children:
+        Expression_children.remove(None)
+    Expression_node=Tree("Expression",Expression_children)
+    Expression_dict['node']=Expression_node
+    Expression_dict['index']=dict2['index']
+    return Expression_dict
 
-def Relation(i):
-    Relation_dict = dict()
-    Relation_children = []
-    last_index = i
-    if i < len(Tokens):
-        temp = Tokens[i].to_dict()
-        #################################################
-        if temp['token_type'] in [Token_type.PlusOp, Token_type.MultiplyOp, Token_type.MinusOp, Token_type.DivideOp]:
-            dict1 = ArithmeticOp(i)
-            Relation_children.append(dict1['node'])
-            dict2 = IdorConst(dict1['index'])
-            Relation_children.append(dict2['node'])
-            dict3 = Relation2(dict2['index'])
-            Relation_children.append(dict3['node'])
-            if None in Relation_children:
-                Relation_children.remove(None)
-            last_index = dict3['index']
-
+def Expression2(i):
+    Expression2_dict=dict()
+    Expression2_children=[]
+    last_index=i
+    if i<len(Tokens):
+        temp=Tokens[i].to_dict()
+        if temp['token_type'] in [Token_type.MinusOp,Token_type.PlusOp]:
+            dict1=AddOp(i)
+            Expression2_children.append(dict1['node'])
+            dict2=MultTerm(dict1['index'])
+            Expression2_children.append(dict2['node'])
+            dict3=Expression2(dict2['index'])
+            Expression2_children.append(dict3['node'])
+            if None in Expression2_children :
+                Expression2_children.remove(None)
+            last_index=dict3['index']
         else:
-            Relation_dict['node'] = None
-            Relation_dict['index'] = i
-            return Relation_dict
+            Expression2_dict['node']=None
+            Expression2_dict['index']=i
+            return Expression2_dict
     else:
-        match1 = Match(Token_type.Error, i)
-        Relation_children.append(match1['node'])
-        last_index = match1['index']
-    Relation_node = Tree("Relation", Relation_children)
-    Relation_dict['node'] = Relation_node
-    Relation_dict['index'] = last_index
-    return Relation_dict
+        match1=Match(Token_type.Error,i)
+        Expression2_children.append(match1['node'])
+        last_index=match1['index']
+    Expression2_node=Tree("Expression2",Expression2_children)
+    Expression2_dict['node']=Expression2_node
+    Expression2_dict['index']=last_index
+    return Expression2_dict
 
+def MultTerm(i):
+    MultTerm_dict=dict()
+    MultTerm_children=[]
+    dict1=IdorConst(i)
+    MultTerm_children.append(dict1['node'])
+    dict2=MultTerm2(dict1['index'])
+    MultTerm_children.append(dict2['node'])
+    MultTerm_node=Tree("MultTerm",MultTerm_children)
+    MultTerm_dict['node']=MultTerm_node
+    MultTerm_dict['index']=dict2['index']
+    return MultTerm_dict
 
-def Relation2(i):
-    Relation2_dict = dict()
-    Relation2_children = []
-    last_index = i
-    if i < len(Tokens):
-        temp = Tokens[i].to_dict()
-        #################################################
-        if temp['token_type'] in [Token_type.PlusOp, Token_type.MultiplyOp, Token_type.MinusOp, Token_type.DivideOp]:
-            dict1 = ArithmeticOp(i)
-            Relation2_children.append(dict1['node'])
-            dict2 = IdorConst(dict1['index'])
-            Relation2_children.append(dict2['node'])
-            dict3 = Relation2(dict2['index'])
-            Relation2_children.append(dict3['node'])
-            if None in Relation2_children:
-                Relation2_children.remove(None)
-            last_index = dict3['index']
-
+def MultTerm2(i):
+    MultTerm2_dict=dict()
+    MultTerm2_children=[]
+    last_index=i
+    if i<len(Tokens):
+        temp=Tokens[i].to_dict()
+        if temp['token_type'] in [Token_type.MultiplyOp,Token_type.DivideOp] :
+            dict1=MultOp(i)
+            MultTerm2_children.append(dict1['node'])
+            dict2=IdorConst(dict1['index'])
+            MultTerm2_children.append(dict2['node'])
+            dict3=MultTerm2(dict2['index'])
+            MultTerm2_children.append(dict3['node'])
+            if None in MultTerm2_children:
+                MultTerm2_children.remove(None)
+            last_index=dict3['index']
         else:
-            Relation2_dict['node'] = None
-            Relation2_dict['index'] = i
-            return Relation2_dict
+            MultTerm2_dict['node']=None
+            MultTerm2_dict['index']=i
+            return MultTerm2_dict
     else:
-        match1 = Match(Token_type.Error, i)
-        Relation2_children.append(match1['node'])
-        last_index = match1['index']
-    Relation_node = Tree("Relation", Relation2_children)
-    Relation2_dict['node'] = Relation_node
-    Relation2_dict['index'] = last_index
-    return Relation2_dict
+        match1=Match(Token_type.Error,i)
+        MultTerm2_children.append(match1['node'])
+        last_index=match1['index']
+    MultTerm2_node=Tree("MultTerm2",MultTerm2_children)
+    MultTerm2_dict['node']=MultTerm2_node
+    MultTerm2_dict['index']=last_index
+    return MultTerm2_dict
+
+# def Relation(i):
+#     Relation_dict = dict()
+#     Relation_children = []
+#     last_index = i
+#     if i < len(Tokens):
+#         temp = Tokens[i].to_dict()
+#         #################################################
+#         if temp['token_type'] in [Token_type.PlusOp, Token_type.MultiplyOp, Token_type.MinusOp, Token_type.DivideOp]:
+#             dict1 = ArithmeticOp(i)
+#             Relation_children.append(dict1['node'])
+#             dict2 = IdorConst(dict1['index'])
+#             Relation_children.append(dict2['node'])
+#             dict3 = Relation2(dict2['index'])
+#             Relation_children.append(dict3['node'])
+#             if None in Relation_children:
+#                 Relation_children.remove(None)
+#             last_index = dict3['index']
+
+#         else:
+#             Relation_dict['node'] = None
+#             Relation_dict['index'] = i
+#             return Relation_dict
+#     else:
+#         match1 = Match(Token_type.Error, i)
+#         Relation_children.append(match1['node'])
+#         last_index = match1['index']
+#     Relation_node = Tree("Relation", Relation_children)
+#     Relation_dict['node'] = Relation_node
+#     Relation_dict['index'] = last_index
+#     return Relation_dict
+
+
+# def Relation2(i):
+#     Relation2_dict = dict()
+#     Relation2_children = []
+#     last_index = i
+#     if i < len(Tokens):
+#         temp = Tokens[i].to_dict()
+#         #################################################
+#         if temp['token_type'] in [Token_type.PlusOp, Token_type.MultiplyOp, Token_type.MinusOp, Token_type.DivideOp]:
+#             dict1 = ArithmeticOp(i)
+#             Relation2_children.append(dict1['node'])
+#             dict2 = IdorConst(dict1['index'])
+#             Relation2_children.append(dict2['node'])
+#             dict3 = Relation2(dict2['index'])
+#             Relation2_children.append(dict3['node'])
+#             if None in Relation2_children:
+#                 Relation2_children.remove(None)
+#             last_index = dict3['index']
+
+#         else:
+#             Relation2_dict['node'] = None
+#             Relation2_dict['index'] = i
+#             return Relation2_dict
+#     else:
+#         match1 = Match(Token_type.Error, i)
+#         Relation2_children.append(match1['node'])
+#         last_index = match1['index']
+#     Relation_node = Tree("Relation", Relation2_children)
+#     Relation2_dict['node'] = Relation_node
+#     Relation2_dict['index'] = last_index
+#     return Relation2_dict
 
 
 def Print(i):
@@ -909,42 +992,95 @@ def Step(i):
     return Step_dict
 
 
-def ArithmeticOp(i):
-    ArithmeticOp_dict = dict()
-    ArithmeticOp_children = []
-    last_index = i
-    if i < len(Tokens):
-        temp = Tokens[i].to_dict()
+# def ArithmeticOp(i):
+#     ArithmeticOp_dict = dict()
+#     ArithmeticOp_children = []
+#     last_index = i
+#     if i < len(Tokens):
+#         temp = Tokens[i].to_dict()
+#         if temp['token_type'] == Token_type.MultiplyOp:
+#             match1 = Match(Token_type.MultiplyOp, i)
+#             ArithmeticOp_children.append(match1['node'])
+#             last_index = match1['index']
+#         elif temp['token_type'] == Token_type.DivideOp:
+#             match1 = Match(Token_type.DivideOp, i)
+#             ArithmeticOp_children.append(match1['node'])
+#             last_index = match1['index']
+#         elif temp['token_type'] == Token_type.PlusOp:
+#             match1 = Match(Token_type.PlusOp, i)
+#             ArithmeticOp_children.append(match1['node'])
+#             last_index = match1['index']
+#         elif temp['token_type'] == Token_type.MinusOp:
+#             match1 = Match(Token_type.MinusOp, i)
+#             ArithmeticOp_children.append(match1['node'])
+#             last_index = match1['index']
+#         else:
+#             match1 = Match(Token_type.Error, i)
+#             ArithmeticOp_children.append(match1['node'])
+#             last_index = match1['index']
+
+#     else:
+#         match1 = Match(Token_type.Error, i)
+#         ArithmeticOp_children.append(match1['node'])
+#         last_index = match1['index']
+#     ArithmeticOp_node = Tree("ArithmeticOp")
+#     ArithmeticOp_dict['node'] = ArithmeticOp_node
+#     ArithmeticOp_dict['index']
+#     return ArithmeticOp_dict
+
+def MultOp(i):
+    MultOp_dict=dict()
+    MultOp_children=[]
+    last_index=i
+    if i<len(Tokens):
+        temp=Tokens[i].to_dict()
         if temp['token_type'] == Token_type.MultiplyOp:
-            match1 = Match(Token_type.MultiplyOp, i)
-            ArithmeticOp_children.append(match1['node'])
-            last_index = match1['index']
+            match1=Match(Token_type.MultiplyOp,i)
+            MultOp_children.append(match1['node'])
+            last_index=match1['index']
         elif temp['token_type'] == Token_type.DivideOp:
-            match1 = Match(Token_type.DivideOp, i)
-            ArithmeticOp_children.append(match1['node'])
-            last_index = match1['index']
-        elif temp['token_type'] == Token_type.PlusOp:
-            match1 = Match(Token_type.PlusOp, i)
-            ArithmeticOp_children.append(match1['node'])
-            last_index = match1['index']
-        elif temp['token_type'] == Token_type.MinusOp:
-            match1 = Match(Token_type.MinusOp, i)
-            ArithmeticOp_children.append(match1['node'])
-            last_index = match1['index']
+            match1=Match(Token_type.DivideOp,i)
+            MultOp_children.append(match1['node'])
+            last_index=match1['index']
         else:
             match1 = Match(Token_type.Error, i)
-            ArithmeticOp_children.append(match1['node'])
+            MultOp_children.append(match1['node'])
             last_index = match1['index']
-
     else:
         match1 = Match(Token_type.Error, i)
-        ArithmeticOp_children.append(match1['node'])
+        MultOp_children.append(match1['node'])
         last_index = match1['index']
-    ArithmeticOp_node = Tree("ArithmeticOp")
-    ArithmeticOp_dict['node'] = ArithmeticOp_node
-    ArithmeticOp_dict['index']
-    return ArithmeticOp_dict
+    MultOp_node=Tree("MultOp",MultOp_children)
+    MultOp_dict['node']=MultOp_node
+    MultOp_dict['index']=last_index
+    return MultOp_dict
 
+def AddOp(i):
+    AddOp_dict=dict()
+    AddOp_children=[]
+    last_index=i
+    if i<len(Tokens):
+        temp=Tokens[i].to_dict()
+        if temp['token_type'] == Token_type.PlusOp:
+            match1=Match(Token_type.PlusOp,i)
+            AddOp_children.append(match1['node'])
+            last_index=match1['index']
+        elif temp['token_type'] == Token_type.MinusOp:
+            match1=Match(Token_type.MinusOp,i)
+            AddOp_children.append(match1['node'])
+            last_index=match1['index']
+        else:
+            match1 = Match(Token_type.Error, i)
+            AddOp_children.append(match1['node'])
+            last_index = match1['index']
+    else:
+        match1 = Match(Token_type.Error, i)
+        AddOp_children.append(match1['node'])
+        last_index = match1['index']
+    MultOp_node=Tree("AddOp",AddOp_children)
+    AddOp_dict['node']=MultOp_node
+    AddOp_dict['index']=last_index
+    return AddOp_dict
 
 def IdentifierList(i):
     IdentifierList_dict = dict()
@@ -1000,11 +1136,11 @@ def Conditional(i):
     if i < len(Tokens):
         temp = Tokens[i].to_dict()
         if temp['token_type'] in [Token_type.identifier, Token_type.constant]:
-            dict1 = IdorConst(i)
+            dict1 = Expression(i)
             Conditional_children.append(dict1['node'])
             dict2 = RelationalOp(dict1['index'])
             Conditional_children.append(dict2['node'])
-            dict3 = IdorConst(dict2['index'])
+            dict3 = Expression(dict2['index'])
             Conditional_children.append(dict3['node'])
             last_index = dict3['index']
         elif temp['token_type'] == Token_type.identifier:
@@ -1324,10 +1460,10 @@ def Scan():
                 elif(re.match("\s",i)):
                     tok_string_string=tok_string_string+"S"
                   
-            print(tok_string_string)      
+            # print(tok_string_string)      
             string_dfa.show_diagram(input_str=tok_string_string,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename="constant",view=True)        
         elif temp['Lex'] in Operators:
-            print(temp['Lex'])
+            # print(temp['Lex'])
             operators_dfa.show_diagram(input_str=temp['Lex'],font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename="op",view=True)  
         elif temp['token_type'] == Token_type.constant :
             const_str=""
