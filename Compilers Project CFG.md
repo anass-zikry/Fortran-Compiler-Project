@@ -48,7 +48,7 @@
 46. BooleanExp2➡️ EqualityOp RelationalTerm BooleanExp2 | ɛ 
 47. RelationalTerm➡️ Expression RelationalTerm2
 48. RelationalTerm2➡️ RelationalOp Expression RelationalTerm2 | ɛ
-49. ComplexNotation➡️ ( NegorPos real , NegorPos real )
+49. ComplexNotation➡️ ( NegorPos constant , NegorPos constant )
 50. IdorConst ➡️ NegorPos IdorConst2 
 51. IdorConst2 ➡️ identifier | constant 
 52. RelationalOp ➡️ > | < | <= | >= 
