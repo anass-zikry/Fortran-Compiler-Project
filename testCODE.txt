@@ -1,13 +1,17 @@
-program bb
+program tt
 implicit none
-complex :: z
-z=(3.0,2.0)
-if(z==5.0) then 
-do z=9.0,40,2
-print * , z , 10 
-end do
-else 
-if(z>3) then 
-print* , 3.4
+
+integer :: x
+logical :: y
+y=.true.
+
+if(y) then
+x=40
+if(x/=33)then
+x=22
+if(x>=44)then
+print *,"hajsjingjn%^&**^*("
 end if
-end program bb
+end if
+end if
+end program tt

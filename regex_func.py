@@ -149,7 +149,7 @@ def assignment_regex(line):
 def if_regex(line):
         #le = "if(x==9>0<10>=7<=9/=77) then"
 
-     if re.match("^\s*(if)?\s*(\()\s*(?:([a-z]\w*)?|([0-9]+)?)\s*(?:(<|>|<=|>=|==|/=)\s*(?:([a-z]\w*)|(\d+\.\d+)|(\d+)?)|([a-z]\w*)|(\.true|false\.))*\s*(\))?\s*(then)?\s*",line):
+     if re.match("^\s*(if)?\s*(\()\s*(?:([a-z]\w*)?|([0-9]+)?)\s*(?:(?:(<=)|(>=)|(==)|(/=)|(<)|(>))\s*(?:([a-z]\w*)|(\d+\.\d+)|(\d+)?)|([a-z]\w*)|(\.true|false\.))*\s*(\))?\s*(then)?\s*",line):
 
         c=0
         j=0
@@ -164,7 +164,7 @@ def if_regex(line):
                     c+=1
         rep=''
         for i in range(c):
-            rep += '(?:(<|>|<=|>=|==|/=)\s*(?:([a-z]\w*)|(\d+\.\d+)|(\d+)?)|([a-z]\w*)|(\.true|false\.))'
+            rep += '(?:(?:(<=)|(>=)|(==)|(/=)|(<)|(>))\s*(?:([a-z]\w*)|(\d+\.\d+)|(\d+)?)|([a-z]\w*)|(\.true|false\.))'
         
 
         return re.match("^\s*(if)?\s*(\()\s*(?:([a-z]\w*)?|([0-9]+)?)\s*"+rep+"\s*(\))?\s*(then)?\s*", line)
