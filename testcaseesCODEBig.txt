@@ -2,13 +2,13 @@ program kk
 implicit none! mmmmmmmmm
 integer::x,y
 y=20
-read,x
+read*,x
 !check whether x is bigger than 10
 if (x<10) then
-print,
-print,x,"why is it smaller than 10"
+print*,x
+print*,x,"why is it smaller than 10"
 else 
-print,x,"it is bigger than 10"
+print*,x,"it is bigger than 10"
 end if
 do i=0,y,2
 print*,"y@",y

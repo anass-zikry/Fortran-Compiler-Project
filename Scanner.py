@@ -130,12 +130,15 @@ Regex_dict = {
 
 def find_token(text):
     for line in text:
+        if "!" in line:
+            sp=line.split('!')
+            line = sp[0]
+            if '\n' in sp[1]:
+                line+='\n'
+            comment_flag = True
         if re.match("\s*\n",line):continue
         comment_flag = False
         lexems = []
-        if "!" in line:
-            line = line.split('!')[0]
-            comment_flag = True
         line = line.lower()  # convert to lower case
         lexems=get_regex_groups(line)
         if lexems == None:

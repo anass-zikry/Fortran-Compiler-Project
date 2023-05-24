@@ -1,8 +1,6 @@
 import tkinter as tk
 import pandas
 import pandastable as pt
-from tkPDFViewer import tkPDFViewer as pdf
-from PIL import Image, ImageTk, ImageOps
 from Scanner import find_token,get_Dicts,getToken_type,Operators
 from nltk.tree import *
 from dfa_test import get_reserver_dict ,get_identfier_dfa,get_operator_dfa,get_string_dfa,get_constant_dfa
@@ -23,8 +21,10 @@ Errors=[]
 comment_indeces=[]
 comment_token=0
 def skip_comments():
+    global Tokens
     for i in range(len(Tokens)):
         if Tokens[i].to_dict()['token_type'] == Token_type.ExclMark :
+            global comment_indeces
             comment_indeces.append(i)
     for commentIndex in comment_indeces:
         global comment_token
@@ -44,8 +44,14 @@ def Match(TT,i) :
             return out
         else:
             out['node']=['error']
+            if Tokens[i]!=Token_type.delimiter:
+                while i < len(Tokens):
+                    if Tokens[i].to_dict()['token_type']==Token_type.delimiter :
+                        i+=1
+                        break
+                    i+=1
             out['index']=i
-            Errors.append("Syntax Error: "+TokDict['Lex'])
+            Errors.append("Syntax Error: "+TokDict['Lex']+"Expected:"+str(TT))
             return out
     else :
         out['node']=['error']
@@ -186,9 +192,9 @@ def TypeDecls(i):
                 TypeDecls_children.remove(None)
             last_index = dict2['index']
         else:
-            match1 = Match(Token_type.Error, i)
-            TypeDecls_children.append(match1['node'])
-            last_index = match1['index']
+            TypeDecls_dict['node'] = None
+            TypeDecls_dict['index'] = i
+            return TypeDecls_dict
     else:
         match1 = Match(Token_type.Error, i)
         TypeDecls_children.append(match1['node'])
@@ -1280,13 +1286,13 @@ def ComplexNotation(i):
     ComplexNotation_children.append(match1['node'])
     dict2=NegorPos(match1['index'])
     ComplexNotation_children.append(dict2['node'])
-    match3=Match(Token_type.real,dict2['index'])
+    match3=Match(Token_type.constant,dict2['index'])
     ComplexNotation_children.append(match3['node'])
     match4=Match(Token_type.Comma,match3['index'])
     ComplexNotation_children.append(match4['node'])
     dict5=NegorPos(match4['index'])
     ComplexNotation_children.append(dict5['node'])
-    match6=Match(Token_type.real,dict5['index'])
+    match6=Match(Token_type.constant,dict5['index'])
     ComplexNotation_children.append(match6['node'])
     match7=Match(Token_type.closeParenthesis,match6['index'])
     ComplexNotation_children.append(match7['node'])
@@ -1570,7 +1576,7 @@ def Scan():
                     tok_string_string=tok_string_string+"S"
                   
             # print(tok_string_string)      
-            string_dfa.show_diagram(input_str=tok_string_string,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename="constant",view=True)        
+            string_dfa.show_diagram(input_str=tok_string_string,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp['Lex'],view=True)        
         elif temp['Lex'] in Operators:
             # print(temp['Lex'])
             operators_dfa.show_diagram(input_str=temp['Lex'],font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename="op",view=True)  
@@ -1582,7 +1588,7 @@ def Scan():
                 elif (re.match("[-\+\.]",i)):
                     const_str=const_str+i
                     
-            constant_dfa.show_diagram(input_str=const_str,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp["Lex"],view=True)
+            constant_dfa.show_diagram(input_str=const_str,font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename="constant",view=True)
         else:
             dfa_index=DFA_order_dict[temp['Lex']]
             reserve_DFAs[dfa_index].show_diagram(input_str=temp['Lex'],font_size=9, arrow_size=0.2,format_type='pdf',path="Diagrams/",filename=temp["Lex"],view=True)
@@ -1616,11 +1622,11 @@ def Scan():
     # Node=Parse()
     DFA_wind=tk.Toplevel()
     DFA_wind.title('DFA Diagrams')
-    DFA_canvas=tk.Canvas(DFA_wind,scrollregion=(0,0,500,500))
-    vbar=tk.Scrollbar(DFA_wind,orient=tk.VERTICAL)
+    DFA_canvas=tk.Canvas(DFA_wind,scrollregion=(0,0,1000,1000))
+    vbar=tk.Scrollbar(DFA_canvas,orient=tk.VERTICAL)
     vbar.pack(side=tk.RIGHT,fill=tk.Y)
     vbar.config(command=tk.Canvas.yview)
-    DFA_canvas.config(width=300,height=300)
+    # DFA_canvas.config(width=300,height=300)
     DFA_canvas.config( yscrollcommand=vbar.set)
     DFA_canvas.pack(side=tk.TOP,expand=True,fill=tk.BOTH)
     for i in range(len(showable_tokens)):
