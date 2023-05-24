@@ -51,7 +51,7 @@ def Match(TT,i) :
                         break
                     i+=1
             out['index']=i
-            Errors.append("Syntax Error: "+TokDict['Lex']+"Expected:"+str(TT))
+            Errors.append("Syntax Error: "+TokDict['Lex']+"==>Expected:"+str(TT))
             return out
     else :
         out['node']=['error']
@@ -602,6 +602,8 @@ def MultTerm(i):
     MultTerm_children.append(dict1['node'])
     dict2=MultTerm2(dict1['index'])
     MultTerm_children.append(dict2['node'])
+    if None in MultTerm_children:
+        MultTerm_children.remove(None)
     MultTerm_node=Tree("MultTerm",MultTerm_children)
     MultTerm_dict['node']=MultTerm_node
     MultTerm_dict['index']=dict2['index']
@@ -1503,16 +1505,16 @@ def NegorPos(i):
 
 #GUI
 root= tk.Tk()
-canvas1 = tk.Canvas(root, width=800, height=600, relief='raised')
+canvas1 = tk.Canvas(root, width=800, height=600, relief='raised',background='lightblue')
 canvas1.pack()
 label1 = tk.Label(root, text='Scan & Parse this file')
-label1.config(font=('helvetica', 14))
-canvas1.create_window(350, 50, window=label1)
+label1.config(font=('helvetica', 14),background='lightblue')
+canvas1.create_window(400, 50, window=label1)
 label2 = tk.Label(root, text='Source code file path:')
-label2.config(font=('helvetica', 10))
-canvas1.create_window(300, 100, window=label2)
-entry1 = tk.Entry(root)
-canvas1.create_window(200, 140, window=entry1)
+label2.config(font=('helvetica', 10),background='lightblue')
+canvas1.create_window(400, 100, window=label2,anchor='center')
+entry1 = tk.Entry(root,width=100)
+canvas1.create_window(400, 140, window=entry1)
  
 def Scan():
     filePath = entry1.get()
@@ -1623,13 +1625,17 @@ def Scan():
     DFA_wind=tk.Toplevel()
     DFA_wind.title('DFA Diagrams')
     DFA_canvas=tk.Canvas(DFA_wind,scrollregion=(0,0,1000,1000))
-    vbar=tk.Scrollbar(DFA_canvas,orient=tk.VERTICAL)
-    vbar.pack(side=tk.RIGHT,fill=tk.Y)
-    vbar.config(command=tk.Canvas.yview)
+    # vbar=tk.Scrollbar(DFA_canvas,orient=tk.VERTICAL)
+    # vbar.pack(side=tk.RIGHT,fill=tk.Y)
+    # vbar.config(command=tk.Canvas.yview)
     # DFA_canvas.config(width=300,height=300)
-    DFA_canvas.config( yscrollcommand=vbar.set)
+    # DFA_canvas.config( yscrollcommand=vbar.set)
     DFA_canvas.pack(side=tk.TOP,expand=True,fill=tk.BOTH)
     for i in range(len(showable_tokens)):
+        if i %30 ==0 : 
+            DFA_wind=tk.Toplevel()
+            DFA_wind.title('DFA Diagrams')
+            DFA_canvas.pack(side=tk.TOP,expand=True,fill=tk.BOTH)
         dfa_button=tk.Button(DFA_wind, text='DFA'+str(i+1), command=lambda key= i: DFA_click(key),padx=100)
         dfa_button.pack()
     # DFA_canvas.pack()
@@ -1669,6 +1675,6 @@ def Scan():
     #canvas1.create_window(200, 230, window=label4)
     
     
-button1 = tk.Button(text='Scan', command=Scan, bg='brown', fg='white', font=('helvetica', 9, 'bold'))
-canvas1.create_window(200, 180, window=button1)
+button1 = tk.Button(text='Scan', command=Scan, bg='green', fg='white', font=('helvetica', 10, 'bold'),padx=25,pady=10)
+canvas1.create_window(600, 200, window=button1)
 root.mainloop()

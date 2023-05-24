@@ -6,12 +6,12 @@ logical :: y
 y=.true.
 
 if(y) then
-x=40
+x=40+7*2
 if(x/=33)then
-x=22
-if(x>=44)then
-print *,"hajsjingjn%^&**^*("
+x = 22  @
+if(x>=44)
+print *,"hajsjingjn%^&**^*(", '
 end if
 end if
 end if
-end program tt
+end program 

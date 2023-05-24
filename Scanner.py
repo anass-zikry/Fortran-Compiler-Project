@@ -136,8 +136,8 @@ def find_token(text):
             if '\n' in sp[1]:
                 line+='\n'
             comment_flag = True
-        if re.match("\s*\n",line):continue
         comment_flag = False
+        if re.match("\s*\n",line):continue
         lexems = []
         line = line.lower()  # convert to lower case
         lexems=get_regex_groups(line)
